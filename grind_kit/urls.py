@@ -19,7 +19,7 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', views.GetRoutes, name='routes'),
+    path('', views.GetRoutes, name='routes'),
     path('api/instancecontent/', views.GetInstanceContent, name='instancecontent'),
     path('api/jobs/', views.JobsList, name='jobs'),
     # path('api/job/<int:pk>/', views.jobList, name='job'),
