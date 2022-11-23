@@ -47,7 +47,9 @@ def JobsList (request):
             return Response(Serializer.data, status=status.HTTP_201_CREATED) 
         return Response(Serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # if request.method == 'GET':
-    #     job_data = Job.objects.filter(id=pk)
-    #     serializer = JobSerializer(job_data, many=True)
-    #     return Response(serializer.data)
+@api_view(['GET'])
+def JobsDetail (request, pk):
+    if request.method == 'GET':
+        JobData = Job.objects.filter(id=pk)
+        Serializer = JobsSerializer(JobData, many=True)
+        return Response(Serializer.data)
