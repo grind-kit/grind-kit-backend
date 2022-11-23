@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from . serializers import *
@@ -22,8 +21,12 @@ def getInstanceContent (request):
     serializer = InstanceContentSerializer(content, many=True)
     return Response(serializer.data)
 
-@api_view(['GET'])
-def getJob (request, id):
-    job = Job.objects.filter(id=id)
-    serializer = JobSerializer(job, many=True)
-    return Response(serializer.data)
+@api_view(['GET', 'POST'])
+def jobList (request, pk):
+    if request.method == 'GET':
+        job = Job.objects.filter(id=pk)
+        serializer = JobSerializer(job, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        return Response("Successful")
+        # job_data = JSONParser().

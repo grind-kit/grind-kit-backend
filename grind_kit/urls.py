@@ -21,5 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', views.getRoutes, name='routes'),
     path('api/instancecontent/', views.getInstanceContent, name='instancecontent'),
-    path('api/job/<int:id>/', views.getJob, name='job')
+    path('api/job/<int:pk>/', views.jobList, name='job'),
 ]
