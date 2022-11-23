@@ -6,7 +6,7 @@ class InstanceContentSerializer(ModelSerializer):
         model = InstanceContent
         fields = '__all__'
 
-class JobSerializer(ModelSerializer):
+class JobsSerializer(ModelSerializer):
     class Meta:
         model = Job
         fields = '__all__'

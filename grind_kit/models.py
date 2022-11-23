@@ -36,7 +36,7 @@ class Account (models.Model):
     id = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     firebase_uid = models.CharField(max_length=128)
-    job_id = models.ForeignKey(Job, on_delete=models.CASCADE)
+    jobs_id = models.ForeignKey(Job, on_delete=models.CASCADE)
 
 def __str__(self):
     return self.user.username
