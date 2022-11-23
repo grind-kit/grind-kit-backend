@@ -20,5 +20,6 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', views.getRoutes, name='routes'),
-    path('api/instancecontent/', views.getInstanceContent, name='instancecontent')
+    path('api/instancecontent/', views.getInstanceContent, name='instancecontent'),
+    path('api/job/<int:id>/', views.getJob, name='job')
 ]
