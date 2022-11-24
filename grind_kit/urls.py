@@ -22,5 +22,5 @@ urlpatterns = [
     path('', views.GetRoutes, name='routes'),
     path('api/instancecontent/', views.GetInstanceContent, name='instancecontent'),
     path('api/jobs/', views.JobsList, name='jobslist'),
-    path('api/jobs/<int:pk>/', views.JobsDetail, name='jobsdetail'),
+    path('api/jobs/<int:pk>', views.JobsDetail, name='jobsdetail'),
 ]
