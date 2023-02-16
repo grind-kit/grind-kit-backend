@@ -26,8 +26,8 @@ urlpatterns = [
     path('api/instancecontent/', views.GetInstanceContent, name='instancecontent'),
     path('api/jobs/', views.JobsList, name='jobslist'),
     path('api/jobs/<int:pk>', views.JobsDetail, name='jobsdetail'),
-    path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
-    path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT})
+    # path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
+    # path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT})
 ]
 
 urlpatterns=urlpatterns+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
