@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'https://grind-kit-backend.herokuapp.com/']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'grind-kit-backend.herokuapp.com', 'herokuapp.com']
 
 
 # Application definition
