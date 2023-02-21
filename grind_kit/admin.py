@@ -1,19 +1,27 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
-from django.contrib.auth.admin import UserAdmin
-from .models import InstanceContent, Job, Account
+from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.utils.translation import gettext_lazy as _
 
-admin.site.register(InstanceContent)
-admin.site.register(Job)
+from .models import User
 
-class AccountInline(admin.StackedInline):
-    model = Account
-    can_delete = False
-    verbose_name_plural = 'UserProfiles'
 
-class CustomizedUserAdmin (UserAdmin):
-    inlines = (AccountInline, )
+@admin.register(User)
+class UserAdmin(DjangoUserAdmin):
+    """Define admin model for custom User model with no email field."""
 
-admin.site.unregister(User)
-admin.site.register(User, CustomizedUserAdmin)
-admin.site.register(Account)
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                       'groups', 'user_permissions')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2'),
+        }),
+    )
+    list_display = ('email', 'first_name', 'last_name', 'is_staff')
+    search_fields = ('email', 'first_name', 'last_name')
+    ordering = ('email',)

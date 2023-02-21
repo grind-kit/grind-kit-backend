@@ -15,6 +15,8 @@ from decouple import config
 import dj_database_url
 import os
 
+AUTH_USER_MODEL = 'grind_kit.User'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,13 +30,12 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'grind-kit-backend.herokuapp.com', 'herokuapp.com']
-
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost',
+                 'grind-kit-backend.herokuapp.com', 'herokuapp.com']
 
 # Application definition
 
 INSTALLED_APPS = [
-    'grind_kit',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,6 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Local apps
+    'grind_kit',
 ]
 
 MIDDLEWARE = [
