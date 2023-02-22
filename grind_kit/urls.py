@@ -22,7 +22,6 @@ from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('register/', views.register),
     path('api/', views.GetRoutes, name='routes'),
     path('api/instancecontent/', views.GetInstanceContent, name='instancecontent'),
     path('api/jobs/', views.JobsList, name='jobslist'),

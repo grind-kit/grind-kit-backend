@@ -10,16 +10,6 @@ from . serializers import *
 from rest_framework.decorators import api_view
 
 
-def register(request):
-    if request.method == 'POST':
-        register_data = JSONParser().parse(request)
-        serializer = RegisterSerializer(data=register_data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 @api_view(['GET', 'POST', 'DELETE'])
 def GetRoutes(request):
     routes = [

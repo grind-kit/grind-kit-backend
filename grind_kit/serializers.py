@@ -1,15 +1,33 @@
 from rest_framework.serializers import ModelSerializer
 from . models import *
+from django.conf import settings
 
-class RegisterSerializer(ModelSerializer):
+
+class CustomUserModelSerializer(ModelSerializer):
     class Meta:
-        model = User
-        fields = '__all__'
+        model = CustomUserModel
+        fields = [
+            "userId",
+            "username",
+            "email",
+            "password"
+        ]
+
+    def create(self, validated_data):
+        user = CustomUserModel.objects.create_user(
+            validated_data["username"],
+            validated_data["email"],
+            validated_data["password"]
+        )
+
+        return user
+
 
 class InstanceContentSerializer(ModelSerializer):
     class Meta:
         model = InstanceContent
         fields = '__all__'
+
 
 class JobsSerializer(ModelSerializer):
     class Meta:
