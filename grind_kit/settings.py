@@ -15,8 +15,6 @@ from decouple import config
 import dj_database_url
 import os
 
-AUTH_USER_MODEL = 'grind_kit.User'
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,18 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost',
                  'grind-kit-backend.herokuapp.com', 'herokuapp.com']
 
 # Application definition
-
 INSTALLED_APPS = [
-    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,11 +39,45 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Local apps
+    # Third party
+    'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders',
+    'django.contrib.sites',
+
+    # Authentication
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google'
+
+    # Local app
     'grind_kit',
 ]
 
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+# Disable email verification
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_EMAIL_REQUIRED = False
+
+SITE_ID = 1
+REST_USE_JWT = True # Uses JSON Web Tokens
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -58,6 +87,38 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+    'USER_ID_FIELD': 'userId',
+    'USER_ID_CLAIM': 'user_id',
+    'SIGNING_KEY': config('JWT_SECRET_KEY')
+}
+
+# Custom user model
+AUTH_USER_MODEL = 'grind_kit.User'
+
+# Specify exact serializer for dj-rest-auth
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'grind_kit.serializers.CustomUserModelSerializer'
+}
+
+# Set up authentication classes
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.utils.JWTCookieAuthentication'
+    )
+}
 
 ROOT_URLCONF = 'grind_kit.urls'
 

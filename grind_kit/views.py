@@ -1,16 +1,27 @@
-from django.shortcuts import render
+from django.contrib.auth.forms import UserCreationForm
 
 from django.http.response import JsonResponse
-from rest_framework.parsers import JSONParser 
+from rest_framework.parsers import JSONParser
 from rest_framework import status
 
-from . models import InstanceContent, Job
-from . serializers import InstanceContentSerializer, JobsSerializer
+from . models import *
+from . serializers import *
 
 from rest_framework.decorators import api_view
 
+
+def register(request):
+    if request.method == 'POST':
+        register_data = JSONParser().parse(request)
+        serializer = RegisterSerializer(data=register_data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET', 'POST', 'DELETE'])
-def GetRoutes (request):
+def GetRoutes(request):
     routes = [
         {
             'Endpoint': 'api/instancecontent/',
@@ -41,38 +52,41 @@ def GetRoutes (request):
 
     return JsonResponse(routes)
 
+
 @api_view(['GET'])
-def GetInstanceContent (request):
+def GetInstanceContent(request):
     AllContent = InstanceContent.objects.all()
     Serializer = InstanceContentSerializer(AllContent, many=True)
     return JsonResponse(Serializer.data, safe=False)
 
+
 @api_view(['GET', 'POST'])
-def JobsList (request):
+def JobsList(request):
     if request.method == 'GET':
         AllJobs = Job.objects.all()
         Serializer = JobsSerializer(AllJobs, many=True)
         return JsonResponse(Serializer.data, safe=False)
-    
+
     elif request.method == 'POST':
         JobData = JSONParser().parse(request)
         Serializer = JobsSerializer(data=JobData)
         if Serializer.is_valid():
             Serializer.save()
-            return JsonResponse(Serializer.data, status=status.HTTP_201_CREATED) 
+            return JsonResponse(Serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(Serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET', 'PUT', 'DELETE'])
-def JobsDetail (request, pk):
+def JobsDetail(request, pk):
     try:
         JobData = Job.objects.filter(id=pk)
     except Job.DoesNotExist:
         return JsonResponse({'message': 'The listing does not exist'}, status=status.HTTP_404_NOT_FOUND)
-    
+
     if request.method == 'GET':
         Serializer = JobsSerializer(JobData, many=True)
         return JsonResponse(Serializer.data, safe=False)
-    
+
     elif request.method == 'PUT':
         ExistingData = Job.objects.get(id=pk)
         NewData = JSONParser().parse(request)
@@ -81,7 +95,7 @@ def JobsDetail (request, pk):
             Serializer.save()
             return JsonResponse(Serializer.data)
         return JsonResponse(Serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     elif request.method == 'DELETE':
         JobData.delete()
         return JsonResponse({'message': 'The listing was successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
