@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     # Local app
-    'auth',
+    'authentication',
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -96,7 +96,7 @@ SIMPLE_JWT = {
 }
 
 # Custom user model
-AUTH_USER_MODEL = 'auth.CustomUserModel'
+AUTH_USER_MODEL = 'authentication.CustomUserModel'
 
 # Specify exact serializer for dj-rest-auth
 REST_AUTH_SERIALIZERS = {
