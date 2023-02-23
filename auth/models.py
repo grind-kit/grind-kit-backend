@@ -1,8 +1,7 @@
-from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from uuid import uuid4
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class CustomUserModelManager(BaseUserManager):

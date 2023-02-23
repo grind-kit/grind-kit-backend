@@ -161,5 +161,8 @@ cython_debug/
 #.idea/
 
 # Secrets
-grind_kit/secrets.py
-grind_kit/secrets.example.py
+backend/secrets.py
+backend/secrets.example.py
+
+# Mac
+.DS_Store
