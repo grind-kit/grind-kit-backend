@@ -13,6 +13,13 @@ from .serializers import *
 from rest_framework.decorators import api_view
 
 
+class GoogleLoginView(SocialLoginView):
+    authentication_classes = []
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = 'http://localhost:3000'
+    client_class = OAuth2Client
+
+
 @api_view(['GET', 'POST', 'DELETE'])
 def GetRoutes(request):
     routes = [
@@ -45,11 +52,6 @@ def GetRoutes(request):
 
     return JsonResponse(routes)
 
-class GoogleLoginView(SocialLoginView):
-    authentication_classes = []
-    adapter_class = GoogleOAuth2Adapter
-    callback_url = 'http://localhost:3000'
-    client_class = OAuth2Client
 
 @api_view(['GET'])
 def GetInstanceContent(request):
