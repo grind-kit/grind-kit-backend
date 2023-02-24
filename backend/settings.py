@@ -7,7 +7,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -15,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost',
                  'grind-kit-backend.herokuapp.com', 'herokuapp.com']
 
@@ -63,6 +62,7 @@ SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_EMAIL_REQUIRED = False
 
 SITE_ID = 1
+REST_USE_JWT = True # use JSON Web Tokens
 
 # Uses JSON Web Tokens
 REST_AUTH = {
@@ -94,6 +94,9 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
     'SIGNING_KEY': config('JWT_SECRET_KEY')
 }
+
+# Change before push to production
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Custom user model
 AUTH_USER_MODEL = 'authentication.CustomUserModel'
