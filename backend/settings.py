@@ -47,6 +47,11 @@ INSTALLED_APPS = [
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
+        'APP': {
+            'client_id': config('GOOGLE_CLIENT_ID'),
+            'secret': config('GOOGLE_CLIENT_SECRET'),
+            'key': ''
+        },
         'SCOPE': [
             'profile',
             'email',
@@ -62,7 +67,7 @@ SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_EMAIL_REQUIRED = False
 
 SITE_ID = 1
-REST_USE_JWT = True # use JSON Web Tokens
+REST_USE_JWT = True  # use JSON Web Tokens
 
 # Uses JSON Web Tokens
 REST_AUTH = {
