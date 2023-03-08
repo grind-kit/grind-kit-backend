@@ -14,7 +14,6 @@ from rest_framework.decorators import api_view
 
 
 class GoogleLoginView(SocialLoginView):
-    authentication_classes = []
     adapter_class = GoogleOAuth2Adapter
     callback_url = 'http://localhost:3000'
     client_class = OAuth2Client
