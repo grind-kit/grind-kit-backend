@@ -7,11 +7,11 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 class CustomUserModelManager(BaseUserManager):
 
     def create_user(self, username, email, password=None):
+        if not email:
+            raise ValueError('Users must have an email address')
 
-        user = self.model(
-            username=username,
-            email=self.normalize_email(email),
-        )
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email)
 
         user.set_password(password)
         user.save(using=self._db)
@@ -22,7 +22,7 @@ class CustomUserModelManager(BaseUserManager):
         user = self.create_user(
             username,
             email,
-            password=password
+            password
         )
 
         user.is_staff = True
@@ -34,27 +34,25 @@ class CustomUserModelManager(BaseUserManager):
 
 class CustomUserModel (AbstractUser, PermissionsMixin):
     userId = models.CharField(
-        max_length=36, default=uuid4, primary_key=True, editable=False)
+        max_length=255, default=uuid4, primary_key=True, editable=False)
     username = models.CharField(
-        max_length=16, unique=True, null=False, blank=False)
-    email = models.EmailField(
-        max_length=100, unique=True, null=False, blank=False)
-
-    USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email"]
-
-    active = models.BooleanField(default=True)
+        max_length=255, unique=True)
+    email = models.EmailField(unique=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
-
-    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
 
     objects = CustomUserModelManager()
 
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+
     class Meta:
         verbose_name = "Custom User"
+
+    def __str__(self):
+        return self.email
 
 
 class InstanceContent(models.Model):

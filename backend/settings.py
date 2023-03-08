@@ -45,13 +45,14 @@ INSTALLED_APPS = [
     'authentication',
 ]
 
+# Google OAuth
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        'APP': {
-            'client_id': config('GOOGLE_CLIENT_ID'),
-            'secret': config('GOOGLE_CLIENT_SECRET'),
-            'key': ''
-        },
+        # 'APP': {
+        #     'client_id': config('GOOGLE_CLIENT_ID'),
+        #     'secret': config('GOOGLE_CLIENT_SECRET'),
+        #     'key': ''
+        # },
         'SCOPE': [
             'profile',
             'email',
@@ -66,15 +67,39 @@ SOCIALACCOUNT_PROVIDERS = {
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_EMAIL_REQUIRED = False
 
+# Set site id
 SITE_ID = 1
-REST_USE_JWT = True  # use JSON Web Tokens
-
-# Uses JSON Web Tokens
-REST_AUTH = {
-    'USE_JWT': True,
-    'JWT_AUTH_COOKIE': 'my-app-auth',
-    'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token'
+REST_USE_JWT = True
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserModelSerializer',
 }
+
+# Authentication classes
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    ],
+}
+
+# JWT settings
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+    'USER_ID_FIELD': 'userId',
+    'USER_ID_CLAIM': 'user_id',
+    'SIGNING_KEY': config('JWT_SECRET_KEY'),
+}
+
+# Custom user model
+AUTH_USER_MODEL = 'authentication.CustomUserModel'
 
 
 MIDDLEWARE = [
@@ -89,39 +114,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': True,
-    'USER_ID_FIELD': 'userId',
-    'USER_ID_CLAIM': 'user_id',
-    'SIGNING_KEY': config('JWT_SECRET_KEY')
-}
-
 # Change before push to production
 CORS_ORIGIN_ALLOW_ALL = True
-
-# Custom user model
-AUTH_USER_MODEL = 'authentication.CustomUserModel'
-
-# Specify exact serializer for dj-rest-auth
-REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'auth.serializers.CustomUserModelSerializer'
-}
-
-# Set up authentication classes
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-    ),
-}
 
 ROOT_URLCONF = 'backend.urls'
 
