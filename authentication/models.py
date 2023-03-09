@@ -63,6 +63,9 @@ class InstanceContent(models.Model):
     clear_gil = models.PositiveIntegerField(default=1)
     required_level = models.PositiveIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(90)], null=True)
+    
+    def __str__(self):
+        return self.name
 
 
 class Job (models.Model):
@@ -105,3 +108,6 @@ class Job (models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(90)], null=True)
     rdm_level = models.PositiveIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(90)], null=True)
+    
+    def __str__(self):
+        return self.id
