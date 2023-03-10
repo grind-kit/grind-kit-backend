@@ -2,9 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from uuid import uuid4
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils import timezone
 
-
-class CustomUserModelManager(BaseUserManager):
+class UserManager(BaseUserManager):
 
     def create_user(self, username, email, password=None):
         if not email:
@@ -32,18 +32,18 @@ class CustomUserModelManager(BaseUserManager):
         return user
 
 
-class CustomUserModel (AbstractUser, PermissionsMixin):
+class CustomUser (AbstractUser, PermissionsMixin):
     userId = models.CharField(
         max_length=255, default=uuid4, primary_key=True, editable=False)
     username = models.CharField(
         max_length=255, unique=True)
     email = models.EmailField(unique=True)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=timezone.now)
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
-    objects = CustomUserModelManager()
+    objects = UserManager()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']

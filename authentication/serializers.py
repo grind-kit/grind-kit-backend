@@ -1,11 +1,10 @@
 from rest_framework.serializers import ModelSerializer
-from .models import CustomUserModel, InstanceContent, Job
-from django.conf import settings
+from .models import CustomUser
 
 
-class CustomUserModelSerializer(ModelSerializer):
+class UserSerializer(ModelSerializer):
     class Meta:
-        model = CustomUserModel
+        model = CustomUser
         fields = [
             "userId",
             "username",
@@ -14,22 +13,10 @@ class CustomUserModelSerializer(ModelSerializer):
         ]
 
     def create(self, validated_data):
-        user = CustomUserModel.objects.create_user(
+        user = CustomUser.objects.create_user(
             validated_data["username"],
             validated_data["email"],
             validated_data["password"]
         )
 
         return user
-
-
-class InstanceContentSerializer(ModelSerializer):
-    class Meta:
-        model = InstanceContent
-        fields = '__all__'
-
-
-class JobsSerializer(ModelSerializer):
-    class Meta:
-        model = Job
-        fields = '__all__'

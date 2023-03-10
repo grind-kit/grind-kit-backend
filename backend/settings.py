@@ -14,7 +14,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True
+
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost',
                  'grind-kit-backend.herokuapp.com', 'herokuapp.com']
 
@@ -48,11 +49,6 @@ INSTALLED_APPS = [
 # Google OAuth
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        # 'APP': {
-        #     'client_id': config('GOOGLE_CLIENT_ID'),
-        #     'secret': config('GOOGLE_CLIENT_SECRET'),
-        #     'key': ''
-        # },
         'SCOPE': [
             'profile',
             'email',
@@ -69,9 +65,10 @@ SOCIALACCOUNT_EMAIL_REQUIRED = False
 
 # Set site id
 SITE_ID = 1
+
 REST_USE_JWT = True
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserModelSerializer',
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.UserSerializer',
 }
 
 # Permission and Authentication classes
@@ -95,11 +92,10 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True,
     'USER_ID_FIELD': 'userId',
     'USER_ID_CLAIM': 'user_id',
-    'SIGNING_KEY': config('JWT_SECRET_KEY'),
 }
 
 # Custom user model
-AUTH_USER_MODEL = 'authentication.CustomUserModel'
+AUTH_USER_MODEL = 'authentication.CustomUser'
 
 
 MIDDLEWARE = [
