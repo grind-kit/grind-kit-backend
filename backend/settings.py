@@ -11,13 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('DJANGO_SECRET_KEY')
+SECRET_KEY = 'django-insecure-x*%4+clw#d@_xc5g#$b=xvg=x0dy8z9q6+8*v8q2mkhu8c!372'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost',
-                 'grind-kit-backend.herokuapp.com', 'herokuapp.com']
+ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
@@ -60,7 +59,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # Disable email verification
-SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_EMAIL_REQUIRED = False
 
 # Set site id
@@ -79,7 +78,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ],
 }
 
@@ -97,7 +96,6 @@ SIMPLE_JWT = {
 # Custom user model
 AUTH_USER_MODEL = 'authentication.CustomUser'
 
-
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -111,7 +109,9 @@ MIDDLEWARE = [
 ]
 
 # Change before push to production
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+]
 
 ROOT_URLCONF = 'backend.urls'
 
