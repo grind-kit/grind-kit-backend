@@ -1,26 +1,25 @@
-from django.contrib.auth.models import User
-from rest_framework import authentication
-from rest_framework import exceptions
-import firebase_admin as admin
-import firebase_admin.auth as auth
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
 
-class FirebaseAuthentication(authentication.BaseAuthentication):
-    def authenticate(self, request):
+        token['username'] = user.username
 
-        token = request.headers.get('Authorization')
-        if not token:
-            return None
+        return token
+    
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
-        try:
-            decoded_token = auth.verify_id_token(token)
-            uid = decoded_token["uid"]
-        except:
-            return None
-            
-        try:
-            user = User.objects.get(username=uid)
-            return user
+@api_view(['GET'])
+def getRoutes(request):
+    routes = [
+        '/api/token',
+        '/api/token/refresh',
+    ]
 
-        except User.DoesNotExist:
-            return None
+    return Response(routes)
