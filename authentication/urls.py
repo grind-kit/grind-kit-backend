@@ -6,7 +6,6 @@ from rest_framework_simplejwt.views import (
 )
 
 
-
 urlpatterns = [
     path('', views.getRoutes),
 
