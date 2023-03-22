@@ -3,6 +3,8 @@ from pathlib import Path
 from decouple import config
 import dj_database_url
 import os
+import firebase_admin
+from firebase_admin import credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,10 +13,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x*%4+clw#d@_xc5g#$b=xvg=x0dy8z9q6+8*v8q2mkhu8c!372'
+SECRET_KEY = config('DJANGO_SECRET_KEY')
+
+# Firebase
+
+SERVICE_ACCOUNT_KEY = config('SERVICE_ACCOUNT_KEY')
+cred = credentials.Certificate(SERVICE_ACCOUNT_KEY)
+firebase_admin.initialize_app(cred)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = []
 
