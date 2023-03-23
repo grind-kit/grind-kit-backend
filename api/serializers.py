@@ -1,19 +1,19 @@
 from rest_framework.serializers import ModelSerializer
-from .models import CustomUser
+from .models import FirebaseUser
 
 
 class UserSerializer(ModelSerializer):
     class Meta:
-        model = CustomUser
+        model = FirebaseUser
         fields = [
-            "username",
+            "uid",
             "email",
             "password"
         ]
 
     def create(self, validated_data):
-        user = CustomUser.objects.create_user(
-            validated_data["username"],
+        user = FirebaseUser.objects.create_user(
+            validated_data["uid"],
             validated_data["email"],
             validated_data["password"]
         )
