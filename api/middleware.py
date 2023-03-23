@@ -1,5 +1,7 @@
+import time
 from django.http import JsonResponse
 from firebase_admin import auth
+from decouple import config
 
 
 class FirebaseAuthenticationMiddleware:
@@ -13,10 +15,29 @@ class FirebaseAuthenticationMiddleware:
 
         try:
             id_token = auth_header.split(' ').pop()
+            # print(id_token) # Add this line
             decoded_token = auth.verify_id_token(id_token)
+
+            # Verify token claims
+            if not decoded_token.get('uid'):
+                raise ValueError('No UID present in token')
+
+            # Verify token audience
+            if decoded_token['aud'] != config('FIREBASE_PROJECT_ID'):
+                raise ValueError('Token audience is invalid')
+
+            # Verify token issuer
+            if decoded_token['iss'] != 'https://securetoken.google.com/' + config('FIREBASE_PROJECT_ID'):
+                raise ValueError('Token issuer is invalid')
+
+            # Verify token expiration time
+            if decoded_token['exp'] < time.time():
+                raise ValueError('Token has expired')
+
             request.user_id = decoded_token['uid']
-        except:
-            return JsonResponse({'error': 'Invalid token'}, status=401)
+        except ValueError as e:
+            print(str(e))
+            return JsonResponse({'error': str(e)}, status=401)
 
         response = self.get_response(request)
         return response
