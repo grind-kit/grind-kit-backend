@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view
 
 @api_view(['GET'])
 def my_view(request):
+    print("OK")
     return HttpResponse("Hello, World!")
 
 

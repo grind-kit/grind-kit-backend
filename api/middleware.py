@@ -10,6 +10,13 @@ class FirebaseAuthenticationMiddleware:
 
     def __call__(self, request):
         auth_header = request.META.get('HTTP_AUTHORIZATION')
+        path_info = request.META.get('PATH_INFO')
+
+        if path_info.startswith('/admin/'):
+            # Allow access to admin without Firebase token
+            response = self.get_response(request)
+            return response
+
         if not auth_header:
             return JsonResponse({'error': 'Authorization header missing'}, status=401)
 
