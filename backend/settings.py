@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
-DEBUG = config('DEBUG')
+DEBUG = False
 
 # Firebase Admin SDK
 
@@ -31,7 +31,7 @@ cred = credentials.Certificate({
 firebase_admin.initialize_app(cred)
 
 
-ALLOWED_HOSTS = ['http://localhost:3000', 'localhost']
+ALLOWED_HOSTS = ['http://localhost:3000', 'localhost', 'grind-kit-backend.herokuapp.com']
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = [

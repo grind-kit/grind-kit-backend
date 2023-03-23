@@ -15,7 +15,6 @@ class FirebaseAuthenticationMiddleware:
 
         try:
             id_token = auth_header.split(' ').pop()
-            # print(id_token) # Add this line
             decoded_token = auth.verify_id_token(id_token)
 
             # Verify token claims
@@ -36,7 +35,6 @@ class FirebaseAuthenticationMiddleware:
 
             request.user_id = decoded_token['uid']
         except ValueError as e:
-            print(str(e))
             return JsonResponse({'error': str(e)}, status=401)
 
         response = self.get_response(request)
