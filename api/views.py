@@ -6,15 +6,15 @@ from .serializers import FirebaseUserSerializer as UserSerializer
 
 @api_view(['POST'])
 def create_user(request):
-    uid = request.data.get('uid')
+    username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
 
-    if not uid or not email or not password:
+    if not username or not email or not password:
         return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        user = User.objects.create_user(uid=uid, email=email, password=password)
+        user = User.objects.create_user(username=username, email=email, password=password)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

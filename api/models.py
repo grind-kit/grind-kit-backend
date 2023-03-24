@@ -6,35 +6,40 @@ from django.utils.translation import gettext_lazy as _
 
 class FirebaseUserManager(BaseUserManager):
 
-    def create_user(self, uid, email, password=None, **extra_fields):
-        if not uid:
+    def create_user(self, username, email, password=None, **extra_fields):
+        if not username:
             raise ValueError('The UID must be set')
 
         email = self.normalize_email(email)
-        user = self.model(uid=uid, email=email, **extra_fields)
+        user = self.model(username=username, email=email, **extra_fields)
+
+        # Check if a user with this email already exists
+        if FirebaseUser.objects.filter(email=email).exists():
+            raise ValueError('A user with this email already exists')
+
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, uid, email, password=None, **extra_fields):
+    def create_superuser(self, username, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        return self.create_user(uid, email, password, **extra_fields)
+        return self.create_user(username, email, password, **extra_fields)
 
 
 class FirebaseUser (AbstractUser, PermissionsMixin):
-    uid = models.CharField(
+    username = models.CharField(
         max_length=255, unique=True)
     email = models.EmailField(_('email address'), unique=True)
     created = models.DateTimeField(default=timezone.now)
-    
+
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
     objects = FirebaseUserManager()
 
-    USERNAME_FIELD = 'uid'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 
     class Meta:
