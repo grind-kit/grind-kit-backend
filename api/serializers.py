@@ -2,7 +2,7 @@ from rest_framework.serializers import ModelSerializer
 from .models import FirebaseUser
 
 
-class UserSerializer(ModelSerializer):
+class FirebaseUserSerializer(ModelSerializer):
     class Meta:
         model = FirebaseUser
         fields = [
@@ -17,5 +17,5 @@ class UserSerializer(ModelSerializer):
             validated_data["email"],
             validated_data["password"]
         )
-
+        user.save()
         return user
