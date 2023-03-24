@@ -32,9 +32,9 @@ class UserManager(BaseUserManager):
 
 
 class FirebaseUser (AbstractUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
     uid = models.CharField(
         max_length=255, unique=True)
-    email = models.EmailField(unique=True)
     created = models.DateTimeField(default=timezone.now)
 
     is_staff = models.BooleanField(default=False)
@@ -42,21 +42,24 @@ class FirebaseUser (AbstractUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'uid'
-    REQUIRED_FIELDS = ['email']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['uid']
 
     class Meta:
         verbose_name = "Firebase User"
 
     def __str__(self):
         return self.email
-    
+
 
 class Bookmarks(models.Model):
     user = models.ForeignKey(FirebaseUser, on_delete=models.CASCADE)
     instance_id = models.IntegerField(null=False, blank=False)
     value = models.BooleanField(default=True)
     created = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        verbose_name = "Bookmarks"
 
     def __str__(self):
         return self.instance_id
