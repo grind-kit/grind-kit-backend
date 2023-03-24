@@ -31,13 +31,12 @@ cred = credentials.Certificate({
 firebase_admin.initialize_app(cred)
 
 
-ALLOWED_HOSTS = ['http://localhost:3000', 'localhost', 'grind-kit-backend.herokuapp.com']
+ALLOWED_HOSTS = ['http://localhost:8000', 'http://localhost:3000', 'localhost', 'grind-kit-backend.herokuapp.com']
 
-CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
 ]
-CORS_ALLOW_HEADERS = ['Authorization']
+CORS_ALLOW_HEADERS = ['Authorization', 'Content-Type']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -46,9 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'corsheaders',
     'api',
-
     'firebase_admin',
 ]
 
