@@ -17,7 +17,7 @@ def create_user(request):
 
 
 @api_view(['GET'])
-def getRoutes(request):
+def get_routes(request):
     routes = [
         '/api/user',
     ]

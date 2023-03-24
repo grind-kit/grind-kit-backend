@@ -1,10 +1,7 @@
 from django.urls import path
 from . import views
-from .views import my_view
-
 
 urlpatterns = [
-    path('', views.getRoutes),
-    path('user/', my_view)
-    ,
+    path('', views.get_routes),
+    path('user/', views.create_user),
 ]
