@@ -8,7 +8,8 @@ class FirebaseUserSerializer(ModelSerializer):
         fields = [
             "username",
             "email",
-            "password"
+            "password",
+            "lodestone_id"
         ]
 
     def create(self, validated_data):

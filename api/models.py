@@ -32,6 +32,7 @@ class FirebaseUser (AbstractUser, PermissionsMixin):
         max_length=255, unique=True)
     email = models.EmailField(_('email address'), unique=True)
     created = models.DateTimeField(default=timezone.now)
+    lodestone_id = models.IntegerField(null=True, default=None)
 
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
