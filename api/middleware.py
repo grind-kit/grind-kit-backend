@@ -12,7 +12,7 @@ class FirebaseAuthenticationMiddleware:
         auth_header = request.META.get('HTTP_AUTHORIZATION')
         path_info = request.META.get('PATH_INFO')
 
-        if path_info.startswith('/api/users'):
+        if path_info.startswith('/api/users') and request.method == 'POST':
             # Allow access to user creation without Firebase token
             response = self.get_response(request)
             return response
