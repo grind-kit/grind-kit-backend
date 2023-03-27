@@ -1,19 +1,32 @@
-from django.http import JsonResponse
-from rest_framework.response import Response
-from django.http import HttpResponse
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import FirebaseUser as User
+from .serializers import FirebaseUserSerializer as UserSerializer
+
+@api_view(['POST'])
+def create_user(request):
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    if not username or not email or not password:
+        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = User.objects.create_user(username=username, email=email, password=password)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = UserSerializer(user)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 
 @api_view(['GET'])
-def my_view(request):
-    print("OK")
-    return HttpResponse("Hello, World!")
-
-
-@api_view(['GET'])
-def getRoutes(request):
+def get_routes(request):
     routes = [
-        '/api/user',
+        '/api/users',
     ]
 
     return Response(routes)
