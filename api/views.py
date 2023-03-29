@@ -23,7 +23,7 @@ def create_user(request):
     serializer = UserSerializer(user)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-@api_view(['GET, PUT'])
+@api_view(['GET', 'PUT'])
 def user_info_view(request, username: str):
 
     if not username:
