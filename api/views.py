@@ -23,8 +23,8 @@ def create_user(request):
     serializer = UserSerializer(user)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-@api_view(['GET'])
-def get_user(request, username: str):
+@api_view(['GET', 'PUT'])
+def user_info_view(request, username: str):
 
     if not username:
         return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
@@ -37,6 +37,13 @@ def get_user(request, username: str):
     if request.method == 'GET':
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == 'PUT':
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
