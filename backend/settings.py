@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'api',
     'firebase_admin',
+    'django_extensions',
 ]
 
 AUTH_USER_MODEL = 'api.FirebaseUser'
