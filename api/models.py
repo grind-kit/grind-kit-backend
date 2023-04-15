@@ -61,8 +61,8 @@ class ContentFinderCondition (models.Model):
     class_job_level_required = models.IntegerField(null=False, blank=False)
     item_level_required = models.IntegerField(null=False, blank=False)
     url = models.CharField(max_length=255, null=False, blank=False)
-    content_type_id = models.IntegerField(null=False, blank=False)
-    accept_class_job_category = models.JSONField(null=False, blank=False)
+    content_type_id = models.IntegerField(null=True, blank=False)
+    accept_class_job_category = models.JSONField(null=True, blank=False)
 
 class Bookmark (models.Model):
     user = models.ForeignKey(FirebaseUser, on_delete=models.CASCADE)
