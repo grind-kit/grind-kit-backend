@@ -2,7 +2,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import FirebaseUser as User
+from .models import ContentFinderCondition
 from .serializers import FirebaseUserSerializer as UserSerializer
+from .serializers import ContentFinderConditionSerializer
 
 
 @api_view(['POST'])
@@ -45,12 +47,31 @@ def user_info_view(request, username: str):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+def get_content_finder_conditions(request):
+    min_level = request.GET.get('minLevel')
+    max_level = request.GET.get('maxLevel')
+
+    if not min_level or not max_level:
+        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    conditions = ContentFinderCondition.objects.filter(
+        class_job_level_required__gte=min_level,
+        class_job_level_required__lte=max_level
+    )
+    serializer = ContentFinderConditionSerializer(conditions, many=True)
+
+    if not serializer.data:
+        return Response({'error': 'No matching conditions found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def get_routes(request):
     routes = [
         '/api/users',
-        '/api/users/<str:username>'
+        '/api/users/<str:username>',
+        '/api/conditions',
     ]
 
     return Response(routes)
