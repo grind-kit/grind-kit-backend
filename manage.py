@@ -2,6 +2,11 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from api.management.commands.seed_data import Command
+
+COMMANDS = {
+    'seed_data': Command,
+}
 
 
 def main():

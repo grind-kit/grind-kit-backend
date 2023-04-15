@@ -54,7 +54,15 @@ class FirebaseUser (AbstractUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
-
+    
+class ContentFinderCondition (models.Model):
+    id = models.IntegerField(primary_key=True, null=False, blank=False)
+    name = models.CharField(max_length=255, null=False, blank=True)
+    class_job_level_required = models.IntegerField(null=False, blank=False)
+    item_level_required = models.IntegerField(null=False, blank=False)
+    url = models.CharField(max_length=255, null=False, blank=False)
+    content_type_id = models.IntegerField(null=True, blank=False)
+    accept_class_job_category = models.JSONField(null=True, blank=False)
 
 class Bookmark (models.Model):
     user = models.ForeignKey(FirebaseUser, on_delete=models.CASCADE)
