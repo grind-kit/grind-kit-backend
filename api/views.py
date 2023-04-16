@@ -49,15 +49,18 @@ def user_info_view(request, username: str):
 
 @api_view(['GET'])
 def get_content_finder_conditions(request):
-    min_level = request.GET.get('minLevel')
-    max_level = request.GET.get('maxLevel')
+    type_id = request.GET.get('type')
+    min_level = request.GET.get('min')
+    max_level = request.GET.get('max')
+
 
     if not min_level or not max_level:
         return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
     
     conditions = ContentFinderCondition.objects.filter(
         class_job_level_required__gte=min_level,
-        class_job_level_required__lte=max_level
+        class_job_level_required__lte=max_level,
+        content_type_id=type_id
     )
     serializer = ContentFinderConditionSerializer(conditions, many=True)
 
