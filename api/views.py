@@ -5,6 +5,7 @@ from .models import FirebaseUser as User
 from .models import ContentFinderCondition
 from .serializers import FirebaseUserSerializer as UserSerializer
 from .serializers import ContentFinderConditionSerializer
+from django.core.cache import cache
 
 
 @api_view(['POST'])
@@ -52,7 +53,12 @@ def get_content_finder_conditions(request):
     type_id = request.GET.get('type')
     min_level = request.GET.get('min')
     max_level = request.GET.get('max')
+    cache_key = f'content_finder_conditions_{type_id}_{min_level}_{max_level}'
 
+    cached_response = cache.get(cache_key)
+
+    if cached_response:
+        return Response(cached_response, status=status.HTTP_200_OK)
 
     if not min_level or not max_level:
         return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
