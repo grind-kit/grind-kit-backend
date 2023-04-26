@@ -30,11 +30,20 @@ def create_user(request):
 
 @api_view(['GET', 'PUT'])
 def user_info_view(request, username: str):
+    if not username:
+        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
+
+    cache_key = f'uid_{username}'
+
+    cached_response = cache.get(cache_key)
+
+    if cached_response and request.method == 'GET':
+        return Response(cached_response, status=status.HTTP_200_OK)
 
     try:
         RateLimit(
-            key=f"uid:{username}",
-            limit=1,
+            key=f"uid_{username}",
+            limit=10,
             period=60
         ).check()
     except RateLimitSucceeded as e:
@@ -42,9 +51,6 @@ def user_info_view(request, username: str):
             f"Rate limit exceeded. You have used {e.usage} of {e.limit} requests in the last minute.",
             status=429
         )
-
-    if not username:
-        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         user = User.objects.get(username=username)
