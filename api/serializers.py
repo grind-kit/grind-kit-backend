@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import FirebaseUser, Bookmark, ContentFinderCondition
+from .models import FirebaseUser, InstanceContentBookmark, ContentFinderCondition
 
 
 class FirebaseUserSerializer(ModelSerializer):
@@ -16,6 +16,7 @@ class FirebaseUserSerializer(ModelSerializer):
         user.save()
         return user
 
+
 class ContentFinderConditionSerializer(ModelSerializer):
     class Meta:
         model = ContentFinderCondition
@@ -27,4 +28,17 @@ class ContentFinderConditionSerializer(ModelSerializer):
             'url',
             'content_type_id',
             'accept_class_job_category',
+        ]
+
+
+class InstanceContentBookmarkSerializer(ModelSerializer):
+    class Meta:
+        model = InstanceContentBookmark
+        fields = [
+            'id',
+            'user_id',
+            'content_finder_condition_id',
+            'content_type_id',
+            'value',
+            'created',
         ]

@@ -64,14 +64,21 @@ class ContentFinderCondition (models.Model):
     content_type_id = models.IntegerField(null=True, blank=False)
     accept_class_job_category = models.JSONField(null=True, blank=False)
 
-class Bookmark (models.Model):
-    user = models.ForeignKey(FirebaseUser, on_delete=models.CASCADE)
-    instance_id = models.IntegerField(null=False, blank=False)
-    value = models.BooleanField(default=True)
+    class Meta:
+        verbose_name = "Content Finder Condition"
+
+    def __str__(self):
+        return self.name
+
+class InstanceContentBookmark (models.Model):
+    user_id = models.ForeignKey(FirebaseUser, on_delete=models.CASCADE)
+    content_finder_condition_id = models.ForeignKey(ContentFinderCondition, on_delete=models.CASCADE)
+    content_type_id = models.IntegerField(null=True, blank=False)
+    value = models.IntegerField(null=False, blank=False, default=1)
     created = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        verbose_name = "Bookmark"
+        verbose_name = "Instance Content Bookmark"
 
     def __str__(self):
-        return self.instance_id
+        return self.content_finder_condition_id

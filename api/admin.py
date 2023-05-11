@@ -1,7 +1,8 @@
 from django.contrib import admin
 
-from .models import FirebaseUser, Bookmark, ContentFinderCondition
+from .models import *
 
 admin.site.register(FirebaseUser)
-admin.site.register(Bookmark)
+
 admin.site.register(ContentFinderCondition)
+admin.site.register(InstanceContentBookmark)

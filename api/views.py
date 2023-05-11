@@ -2,9 +2,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import FirebaseUser as User
-from .models import ContentFinderCondition
+from .models import ContentFinderCondition, InstanceContentBookmark
 from .serializers import FirebaseUserSerializer as UserSerializer
-from .serializers import ContentFinderConditionSerializer
+from .serializers import ContentFinderConditionSerializer, InstanceContentBookmarkSerializer
 from django.core.cache import cache
 from .ratelimit import RateLimit, RateLimitSucceeded
 
@@ -96,12 +96,34 @@ def get_content_finder_conditions(request):
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['POST'])
+def create_bookmark(request):
+    user_id = request.data.get('user_id')
+    content_type_id = request.data.get('content_type_id')
+    content_finder_condition_id = request.data.get('content_finder_condition_id')
+
+    if not user_id or not content_type_id or not content_finder_condition_id:
+        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        bookmark = InstanceContentBookmark.objects.create(
+            user_id=user_id,
+            content_type_id=content_type_id,
+            content_finder_condition_id=content_finder_condition_id
+        )
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    serializer = InstanceContentBookmarkSerializer(bookmark)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 @api_view(['GET'])
 def get_routes(request):
     routes = [
         '/api/users',
         '/api/users/<str:username>',
+        '/api/users/<int:user_id>/bookmarks',
         '/api/conditions',
     ]
 
