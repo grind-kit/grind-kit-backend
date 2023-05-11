@@ -5,7 +5,7 @@ from .models import FirebaseUser, InstanceContentBookmark, ContentFinderConditio
 class FirebaseUserSerializer(ModelSerializer):
     class Meta:
         model = FirebaseUser
-        fields = ['username', 'lodestone_id']
+        fields = ['id', 'username', 'lodestone_id']
 
     def create(self, validated_data):
         user = FirebaseUser.objects.create_user(
