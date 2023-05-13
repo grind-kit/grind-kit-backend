@@ -7,7 +7,7 @@ from .serializers import FirebaseUserSerializer as UserSerializer
 from .serializers import ContentFinderConditionSerializer, InstanceContentBookmarkSerializer
 from django.core.cache import cache
 from .ratelimit import RateLimit, RateLimitSucceeded
-
+from django.utils import timezone
 
 @api_view(['POST'])
 def create_user(request):
@@ -96,24 +96,31 @@ def get_content_finder_conditions(request):
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 @api_view(['POST'])
-def create_bookmark(request):
-    user_id = request.data.get('user_id')
+def create_bookmark(request, user_id: int):
+
+    user = User.objects.get(id=user_id)
+    content_finder_condition_id = request.data.get(
+        'content_finder_condition')
+    content_finder_condition = ContentFinderCondition.objects.get(id=content_finder_condition_id)
     content_type_id = request.data.get('content_type_id')
-    content_finder_condition_id = request.data.get('content_finder_condition_id')
+    created = timezone.now()
 
     if not user_id or not content_type_id or not content_finder_condition_id:
         return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         bookmark = InstanceContentBookmark.objects.create(
-            user_id=user_id,
+            user=user,
+            content_finder_condition=content_finder_condition,
             content_type_id=content_type_id,
-            content_finder_condition_id=content_finder_condition_id
+            value=1,
+            created=created
         )
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     serializer = InstanceContentBookmarkSerializer(bookmark)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 

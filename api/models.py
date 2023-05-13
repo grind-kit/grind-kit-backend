@@ -54,7 +54,8 @@ class FirebaseUser (AbstractUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
-    
+
+
 class ContentFinderCondition (models.Model):
     id = models.IntegerField(primary_key=True, null=False, blank=False)
     name = models.CharField(max_length=255, null=False, blank=True)
@@ -68,11 +69,13 @@ class ContentFinderCondition (models.Model):
         verbose_name = "Content Finder Condition"
 
     def __str__(self):
-        return self.name
+        return str(self.id) + " - " + self.name
+
 
 class InstanceContentBookmark (models.Model):
-    user_id = models.ForeignKey(FirebaseUser, on_delete=models.CASCADE)
-    content_finder_condition_id = models.ForeignKey(ContentFinderCondition, on_delete=models.CASCADE)
+    user = models.ForeignKey(FirebaseUser, on_delete=models.CASCADE)
+    content_finder_condition = models.ForeignKey(
+        ContentFinderCondition, on_delete=models.CASCADE)
     content_type_id = models.IntegerField(null=True, blank=False)
     value = models.IntegerField(null=False, blank=False, default=1)
     created = models.DateTimeField(default=timezone.now)
@@ -81,4 +84,4 @@ class InstanceContentBookmark (models.Model):
         verbose_name = "Instance Content Bookmark"
 
     def __str__(self):
-        return self.content_finder_condition_id
+        return str(self.id) + " - " + self.content_finder_condition.name
