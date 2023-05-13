@@ -9,6 +9,7 @@ from django.core.cache import cache
 from .ratelimit import RateLimit, RateLimitSucceeded
 from django.utils import timezone
 
+
 @api_view(['POST'])
 def create_user(request):
     username = request.data.get('username')
@@ -100,10 +101,24 @@ def get_content_finder_conditions(request):
 @api_view(['GET', 'POST'])
 def user_bookmark_view(request, user_id: int):
 
+    if request.method not in ['GET', 'POST']:
+        return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    if not user_id:
+        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
+
     user = User.objects.get(id=user_id)
 
     if request.method == 'GET':
-        bookmarks = InstanceContentBookmark.objects.filter(user=user)
+        try:
+            bookmarks = InstanceContentBookmark.objects.filter(user=user)
+
+            if not bookmarks:
+                return Response({'error': 'No bookmarks found'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = InstanceContentBookmarkSerializer(bookmarks, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -111,11 +126,12 @@ def user_bookmark_view(request, user_id: int):
 
         content_finder_condition_id = request.data.get(
             'content_finder_condition')
-        content_finder_condition = ContentFinderCondition.objects.get(id=content_finder_condition_id)
+        content_finder_condition = ContentFinderCondition.objects.get(
+            id=content_finder_condition_id)
         content_type_id = request.data.get('content_type_id')
         created = timezone.now()
 
-        if not user_id or not content_type_id or not content_finder_condition_id:
+        if not content_type_id or not content_finder_condition_id:
             return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
