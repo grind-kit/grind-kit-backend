@@ -98,6 +98,30 @@ def get_content_finder_conditions(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@api_view(['PATCH'])
+def patch_bookmark_view(request, user_id: int, bookmark_id: int):
+    if request.method not in ['PATCH']:
+        return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    if not user_id or not bookmark_id:
+        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        bookmark = InstanceContentBookmark.objects.get(id=bookmark_id)
+
+        if not bookmark:
+            return Response({'error': 'Bookmark not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        bookmark.value = request.data.get('value')
+        bookmark.save()
+
+        serializer = InstanceContentBookmarkSerializer(bookmark)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET', 'POST'])
 def user_bookmark_view(request, user_id: int):
 
