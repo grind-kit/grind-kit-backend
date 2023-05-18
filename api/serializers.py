@@ -35,6 +35,7 @@ class InstanceContentBookmarkSerializer(ModelSerializer):
     class Meta:
         model = InstanceContentBookmark
         fields = [
+            'id',
             'user',
             'content_finder_condition',
             'content_type_id',
