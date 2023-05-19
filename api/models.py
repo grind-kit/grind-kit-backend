@@ -82,6 +82,7 @@ class InstanceContentBookmark (models.Model):
 
     class Meta:
         verbose_name = "Instance Content Bookmark"
+        unique_together = ('user', 'content_finder_condition')
 
     def __str__(self):
         return str(self.id) + " - " + self.content_finder_condition.name

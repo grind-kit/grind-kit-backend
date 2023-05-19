@@ -158,6 +158,9 @@ def user_bookmark_view(request, user_id: int):
         if not content_type_id or not content_finder_condition_id:
             return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
 
+        if InstanceContentBookmark.objects.filter(user=user, content_finder_condition=content_finder_condition_id).exists():
+            return Response({'error': 'Bookmark already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             bookmark = InstanceContentBookmark.objects.create(
                 user=user,
