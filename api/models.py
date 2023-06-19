@@ -33,7 +33,7 @@ class FirebaseUser (AbstractUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=None, null=True, blank=True)
-    lodestone_id = models.IntegerField(null=True, default=None)
+    lodestone_id = models.IntegerField(default=None, null=True, blank=True)
 
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -60,6 +60,8 @@ class FirebaseUserToken (models.Model):
     user = models.OneToOneField(FirebaseUser, on_delete=models.CASCADE)
     id_token = models.CharField(max_length=500)
     refresh_token = models.CharField(max_length=500, null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=None, null=True, blank=True)
 
     def __str__(self):
         return self.user.username

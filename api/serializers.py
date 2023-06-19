@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import FirebaseUser, InstanceContentBookmark, ContentFinderCondition
+from .models import FirebaseUser, FirebaseUserToken, InstanceContentBookmark, ContentFinderCondition
 
 
 class FirebaseUserSerializer(ModelSerializer):
@@ -15,6 +15,13 @@ class FirebaseUserSerializer(ModelSerializer):
         )
         user.save()
         return user
+
+
+class FirebaseUserTokenSerializer(ModelSerializer):
+    class Meta:
+        model = FirebaseUserToken
+        fields = ['id', 'user', 'id_token',
+                  'refresh_token', 'created_at', 'updated_at']
 
 
 class ContentFinderConditionSerializer(ModelSerializer):

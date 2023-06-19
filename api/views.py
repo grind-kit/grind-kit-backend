@@ -2,12 +2,16 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import FirebaseUser as User
+from .models import FirebaseUserToken as UserToken
 from .models import ContentFinderCondition, InstanceContentBookmark
 from .serializers import FirebaseUserSerializer as UserSerializer
+from .serializers import FirebaseUserTokenSerializer as UserTokenSerializer
 from .serializers import ContentFinderConditionSerializer, InstanceContentBookmarkSerializer
 from django.core.cache import cache
 from .ratelimit import RateLimit, RateLimitSucceeded
 from django.utils import timezone
+from django.contrib.auth import authenticate
+from django.db import IntegrityError
 
 
 @api_view(['POST'])
@@ -26,6 +30,35 @@ def create_user(request):
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     serializer = UserSerializer(user)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+def create_user_token(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    if not username or not password:
+        return Response({'error': 'Missing required authentication data'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = authenticate(username=username, password=password)
+
+    if not user:
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    id_token = request.data.get('id_token')
+    refresh_token = request.data.get('refresh_token')
+
+    if not id_token or not refresh_token:
+        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        token = UserToken.objects.create(
+            user=user, id_token=id_token, refresh_token=refresh_token)
+    except IntegrityError as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = UserTokenSerializer(token)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
