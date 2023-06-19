@@ -31,7 +31,8 @@ class FirebaseUser (AbstractUser, PermissionsMixin):
     username = models.CharField(
         max_length=255, unique=True)
     email = models.EmailField(_('email address'), unique=True)
-    created = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=None, null=True, blank=True)
     lodestone_id = models.IntegerField(null=True, default=None)
 
     is_staff = models.BooleanField(default=False)
@@ -55,6 +56,13 @@ class FirebaseUser (AbstractUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return True
 
+class FirebaseUserToken (models.Model):
+    user = models.OneToOneField(FirebaseUser, on_delete=models.CASCADE)
+    id_token = models.CharField(max_length=500)
+    refresh_token = models.CharField(max_length=500, null=True, blank=True)
+
+    def __str__(self):
+        return self.user.username
 
 class ContentFinderCondition (models.Model):
     id = models.IntegerField(primary_key=True, null=False, blank=False)

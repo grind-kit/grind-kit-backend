@@ -40,5 +40,6 @@ class InstanceContentBookmarkSerializer(ModelSerializer):
             'content_finder_condition',
             'content_type_id',
             'value',
-            'created',
+            'created_at',
+            'updated_at',
         ]
