@@ -65,6 +65,9 @@ class FirebaseUserToken (models.Model):
 
     def __str__(self):
         return self.user.username
+    
+    class Meta:
+        verbose_name = "Firebase User Token"
 
 class ContentFinderCondition (models.Model):
     id = models.IntegerField(primary_key=True, null=False, blank=False)
