@@ -62,16 +62,21 @@ def create_user_token(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(['GET', 'PUT'])
-def user_info_view(request, username: str):
-    if not username:
-        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['POST', 'PUT'])
+def login_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    authenticated_user = authenticate(username=username, password=password)
+
+    if not authenticated_user:
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
     cache_key = f'uid_{username}'
 
     cached_response = cache.get(cache_key)
 
-    if cached_response and request.method == 'GET':
+    if cached_response and request.method == 'POST':
         return Response(cached_response, status=status.HTTP_200_OK)
 
     try:
@@ -91,7 +96,7 @@ def user_info_view(request, username: str):
     except User.DoesNotExist:
         return Response({'error': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'GET':
+    if request.method == 'POST':
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

@@ -46,12 +46,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
-    'api',
     'firebase_admin',
     'django_extensions',
+
+    # Local apps
+    'api.apps.ApiConfig',
+    'users.apps.UsersConfig',
 ]
 
-AUTH_USER_MODEL = 'api.FirebaseUser'
+AUTH_USER_MODEL = 'users.FirebaseUser'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

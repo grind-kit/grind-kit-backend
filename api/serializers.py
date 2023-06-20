@@ -1,28 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import FirebaseUser, FirebaseUserToken, InstanceContentBookmark, ContentFinderCondition
-
-
-class FirebaseUserSerializer(ModelSerializer):
-    class Meta:
-        model = FirebaseUser
-        fields = ['id', 'username', 'lodestone_id']
-
-    def create(self, validated_data):
-        user = FirebaseUser.objects.create_user(
-            validated_data["username"],
-            validated_data["email"],
-            validated_data["password"]
-        )
-        user.save()
-        return user
-
-
-class FirebaseUserTokenSerializer(ModelSerializer):
-    class Meta:
-        model = FirebaseUserToken
-        fields = ['id', 'user', 'id_token',
-                  'refresh_token', 'created_at', 'updated_at']
-
+from .models import InstanceContentBookmark, ContentFinderCondition
 
 class ContentFinderConditionSerializer(ModelSerializer):
     class Meta:
