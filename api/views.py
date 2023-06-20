@@ -1,111 +1,13 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import FirebaseUser as User
-from .models import FirebaseUserToken as UserToken
 from .models import ContentFinderCondition, InstanceContentBookmark
-from .serializers import FirebaseUserSerializer as UserSerializer
-from .serializers import FirebaseUserTokenSerializer as UserTokenSerializer
 from .serializers import ContentFinderConditionSerializer, InstanceContentBookmarkSerializer
 from django.core.cache import cache
 from .ratelimit import RateLimit, RateLimitSucceeded
 from django.utils import timezone
 from django.contrib.auth import authenticate
 from django.db import IntegrityError
-
-
-@api_view(['POST'])
-def create_user(request):
-    username = request.data.get('username')
-    email = request.data.get('email')
-    password = request.data.get('password')
-
-    if not username or not email or not password:
-        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        user = User.objects.create_user(
-            username=username, email=email, password=password)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    serializer = UserSerializer(user)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-@api_view(['POST'])
-def create_user_token(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
-
-    if not username or not password:
-        return Response({'error': 'Missing required authentication data'}, status=status.HTTP_400_BAD_REQUEST)
-
-    user = authenticate(username=username, password=password)
-
-    if not user:
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
-    id_token = request.data.get('id_token')
-    refresh_token = request.data.get('refresh_token')
-
-    if not id_token or not refresh_token:
-        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        token = UserToken.objects.create(
-            user=user, id_token=id_token, refresh_token=refresh_token)
-    except IntegrityError as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    serializer = UserTokenSerializer(token)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-@api_view(['POST', 'PUT'])
-def login_view(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
-
-    authenticated_user = authenticate(username=username, password=password)
-
-    if not authenticated_user:
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
-    cache_key = f'uid_{username}'
-
-    cached_response = cache.get(cache_key)
-
-    if cached_response and request.method == 'POST':
-        return Response(cached_response, status=status.HTTP_200_OK)
-
-    try:
-        RateLimit(
-            key=f"uid_{username}",
-            limit=10,
-            period=60
-        ).check()
-    except RateLimitSucceeded as e:
-        return Response(
-            f"Rate limit exceeded. You have used {e.usage} of {e.limit} requests in the last minute.",
-            status=429
-        )
-
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        return Response({'error': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'POST':
-        serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    elif request.method == 'PUT':
-        serializer = UserSerializer(user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
