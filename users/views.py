@@ -12,9 +12,6 @@ class UserCreate(generics.CreateAPIView):
     serializer_class = FirebaseUserSerializer
 
     def create(self, request, *args, **kwargs):
-        # Check if request is POST
-        if request.method != 'POST':
-            return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
         username = request.data.get('username')
         email = request.data.get('email')
@@ -66,15 +63,11 @@ class UserLogin(APIView):
 # User Bookmarks
 
 
-class UserBookmarkCreate(generics.CreateAPIView):
-    queryset = UserBookmark.objects.all()
+class UserBookmarkListCreate(generics.ListCreateAPIView):
     serializer_class = UserBookmarkSerializer
+    queryset = UserBookmark.objects.all()
 
     def create(self, request, *args, **kwargs):
-        # Check if request is POST
-        if request.method != 'POST':
-            return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
         user_id = request.data.get('user_id')
         content_finder_condition_id = request.data.get(
             'content_finder_condition_id')
@@ -84,6 +77,12 @@ class UserBookmarkCreate(generics.CreateAPIView):
             return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
 
         return super().create(request, *args, **kwargs)
+
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        queryset = UserBookmark.objects.filter(user_id=user_id)
+
+        return queryset
 
 
 @api_view(['PATCH'])
@@ -108,31 +107,6 @@ def patch_bookmark_view(request, user_id: int, bookmark_id: int):
 
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET', 'POST'])
-def user_bookmark_view(request, user_id: int):
-
-    if request.method not in ['GET', 'POST']:
-        return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    if not user_id:
-        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
-
-    user = User.objects.get(id=user_id)
-
-    if request.method == 'GET':
-        try:
-            bookmarks = InstanceContentBookmark.objects.filter(user=user)
-
-            if not bookmarks:
-                return Response({'error': 'No bookmarks found'}, status=status.HTTP_404_NOT_FOUND)
-
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = InstanceContentBookmarkSerializer(bookmarks, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
