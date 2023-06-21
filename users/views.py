@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import FirebaseUser, FirebaseUserToken, UserBookmark
-from .serializers import FirebaseUserSerializer, FirebaseUserTokenSerializer, UserBookmarkSerializer
+from .serializers import FirebaseUserSerializer, FirebaseUserTokenSerializer, UserBookmarkGetSerializer, UserBookmarkUpdateSerializer
 
 
 class UserCreate(generics.CreateAPIView):
@@ -64,7 +64,7 @@ class UserLogin(APIView):
 
 
 class UserBookmarkListCreate(generics.ListCreateAPIView):
-    serializer_class = UserBookmarkSerializer
+    serializer_class = UserBookmarkGetSerializer
     queryset = UserBookmark.objects.all()
 
     def create(self, request, *args, **kwargs):
@@ -85,28 +85,22 @@ class UserBookmarkListCreate(generics.ListCreateAPIView):
         return queryset
 
 
-@api_view(['PATCH'])
-def patch_bookmark_view(request, user_id: int, bookmark_id: int):
-    if request.method not in ['PATCH']:
-        return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+class UserBookmarkUpdate(generics.RetrieveUpdateAPIView):
 
-    if not user_id or not bookmark_id:
-        return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        queryset = UserBookmark.objects.filter(user_id=user_id)
 
-    try:
-        bookmark = InstanceContentBookmark.objects.get(id=bookmark_id)
+        return queryset
 
-        if not bookmark:
-            return Response({'error': 'Bookmark not found'}, status=status.HTTP_404_NOT_FOUND)
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return UserBookmarkGetSerializer
+        elif self.request.method == 'PATCH':
+            return UserBookmarkUpdateSerializer
 
-        bookmark.value = request.data.get('value')
-        bookmark.save()
-
-        serializer = InstanceContentBookmarkSerializer(bookmark)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
 @api_view(['GET'])

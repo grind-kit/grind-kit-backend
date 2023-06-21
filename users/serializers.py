@@ -24,7 +24,7 @@ class FirebaseUserTokenSerializer(serializers.ModelSerializer):
                   'refresh_token', 'created_at', 'updated_at']
 
 
-class UserBookmarkSerializer(serializers.ModelSerializer):
+class UserBookmarkGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBookmark
         fields = [
@@ -35,4 +35,12 @@ class UserBookmarkSerializer(serializers.ModelSerializer):
             'value',
             'created_at',
             'updated_at',
+        ]
+
+class UserBookmarkUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserBookmark
+        fields = [
+            'value',
+            'updated_at'
         ]
