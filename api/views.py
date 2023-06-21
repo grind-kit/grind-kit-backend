@@ -119,10 +119,7 @@ def user_bookmark_view(request, user_id: int):
 @api_view(['GET'])
 def get_routes(request):
     routes = [
-        '/api/users',
-        '/api/users/<str:username>',
-        '/api/users/<int:user_id>/bookmarks',
-        '/api/conditions',
+        '/api/conditions/',
     ]
 
     return Response(routes)

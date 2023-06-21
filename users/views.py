@@ -1,5 +1,6 @@
 from django.utils import timezone
 from rest_framework import generics, status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import FirebaseUser, FirebaseUserToken
@@ -61,3 +62,12 @@ class UserLogin(APIView):
         # Return user token
         serializer = FirebaseUserTokenSerializer(firebase_user_token)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_routes(request):
+    routes = [
+        '<int:user_id>/bookmarks/',
+        'users/<int:user_id>/bookmarks/<int:bookmark_id>',
+    ]
+
+    return Response(routes)

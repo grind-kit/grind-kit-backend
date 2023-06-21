@@ -1,8 +1,11 @@
 from django.db import models
+from ..api.models import ContentFinderCondition
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-from firebase_admin import auth
+
+# User Authentication
+
 
 class FirebaseUserManager(BaseUserManager):
 
@@ -57,7 +60,9 @@ class FirebaseUser (AbstractUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return True
 
+
 class FirebaseUserToken (models.Model):
+    # Users can only have one token, so use OneToOneField over ForeignKey
     user = models.OneToOneField(FirebaseUser, on_delete=models.CASCADE)
     id_token = models.CharField(max_length=500)
     refresh_token = models.CharField(max_length=500, null=True, blank=True)
@@ -66,7 +71,29 @@ class FirebaseUserToken (models.Model):
 
     def __str__(self):
         return self.user.username
-    
+
     class Meta:
         verbose_name = "Firebase User Token"
         verbose_name_plural = "Firebase User Tokens"
+
+# User Bookmarks
+
+
+class UserBookmark (models.Model):
+    user_id = models.ForeignKey(FirebaseUser, on_delete=models.CASCADE)
+    content_finder_condition_id = models.ForeignKey(
+        ContentFinderCondition, on_delete=models.CASCADE)
+    content_type_id = models.IntegerField(null=True, blank=False)
+    value = models.IntegerField(null=False, blank=False, default=1)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=None, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "User Bookmark"
+        verbose_name_plural = "User Bookmarks"
+
+        # Same user cannot bookmark an entity more than once
+        unique_together = ('user_id', 'content_finder_condition_id')
+
+    def __str__(self):
+        return str(self.id) + " - " + self.content_finder_condition.name

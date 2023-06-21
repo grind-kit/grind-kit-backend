@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FirebaseUser, FirebaseUserToken
+from .models import *
 
 admin.site.register(FirebaseUser)
 admin.site.register(FirebaseUserToken)
