@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import InstanceContentBookmark, ContentFinderCondition
+from .models import ContentFinderCondition
 
 class ContentFinderConditionSerializer(ModelSerializer):
     class Meta:
@@ -12,18 +12,4 @@ class ContentFinderConditionSerializer(ModelSerializer):
             'url',
             'content_type_id',
             'accept_class_job_category',
-        ]
-
-
-class InstanceContentBookmarkSerializer(ModelSerializer):
-    class Meta:
-        model = InstanceContentBookmark
-        fields = [
-            'id',
-            'user',
-            'content_finder_condition',
-            'content_type_id',
-            'value',
-            'created_at',
-            'updated_at',
         ]

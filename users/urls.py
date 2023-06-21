@@ -9,9 +9,9 @@ urlpatterns = [
     path('auth/signup/', views.UserCreate.as_view(), name="signup"),
     path('auth/login/', views.UserLogin.as_view(), name="login"),
 
-
+    # Bookmarks
     path('<int:user_id>/bookmarks/',
-         views.user_bookmark_view, name='user_bookmark_view'),
+         views.UserBookmarkCreate.as_view(), name='create-bookmark'),
     path('users/<int:user_id>/bookmarks/<int:bookmark_id>',
          views.patch_bookmark_view, name='user_bookmark_view'),
     

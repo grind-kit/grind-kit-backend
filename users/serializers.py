@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FirebaseUser, FirebaseUserToken
+from .models import *
 
 
 class FirebaseUserSerializer(serializers.ModelSerializer):
@@ -22,3 +22,17 @@ class FirebaseUserTokenSerializer(serializers.ModelSerializer):
         model = FirebaseUserToken
         fields = ['id', 'user', 'id_token',
                   'refresh_token', 'created_at', 'updated_at']
+
+
+class UserBookmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserBookmark
+        fields = [
+            'id',
+            'user_id',
+            'content_finder_condition_id',
+            'content_type_id',
+            'value',
+            'created_at',
+            'updated_at',
+        ]
