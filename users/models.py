@@ -1,11 +1,13 @@
+import sys
+sys.path.append('..')
+
 from django.db import models
-from ..api.models import ContentFinderCondition
+from api.models import ContentFinderCondition
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 
 # User Authentication
-
 
 class FirebaseUserManager(BaseUserManager):
 

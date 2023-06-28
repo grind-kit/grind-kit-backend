@@ -3,3 +3,4 @@ from .models import *
 
 admin.site.register(FirebaseUser)
 admin.site.register(FirebaseUserToken)
+admin.site.register(UserBookmark)

@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # List of routes
     path('', views.get_routes),
-    path('conditions/', views.get_content_finder_conditions, name='get_content_finder_conditions'),
+
+    # Content Finder Conditions
+    path('conditions/', views.ContentFinderConditionList.as_view(), name='list-conditions'),
 ]

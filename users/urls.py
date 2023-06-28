@@ -13,6 +13,6 @@ urlpatterns = [
     path('<int:user_id>/bookmarks/',
          views.UserBookmarkListCreate.as_view(), name='listcreate-bookmark'),
     path('<int:user_id>/bookmarks/<int:bookmark_id>',
-         views.patch_bookmark_view, name='user_bookmark_view'),
+         views.UserBookmarkUpdate.as_view(), name='update-bookmark'),
     
 ]
