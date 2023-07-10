@@ -4,12 +4,17 @@ from pathlib import Path
 from decouple import config
 import dj_database_url
 import os
+import sys
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
+# Disable debug mode in production
 DEBUG = True
+
+# For testing purposes
+TEST = 'test' in sys.argv
 
 # Firebase Admin SDK
 

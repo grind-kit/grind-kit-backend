@@ -2,14 +2,14 @@ import time
 from django.http import JsonResponse
 from firebase_admin import auth
 from decouple import config
-from django.test.runner import DiscoverRunner
+from django.conf import settings
 
 class FirebaseAuthenticationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        if isinstance(request, DiscoverRunner):
+        if settings.TEST:
             return self.get_response(request)
 
         auth_header = request.META.get('HTTP_AUTHORIZATION')
