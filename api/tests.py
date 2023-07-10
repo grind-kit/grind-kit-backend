@@ -4,12 +4,6 @@ from django.test import TestCase
 class ConditionsEndpointTest(TestCase):
     fixtures = ['api/fixtures/conditions.json']
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     def test_get_conditions_success(self):
         query_params = {
             'type': '8',
