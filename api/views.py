@@ -37,7 +37,7 @@ class ContentFinderConditionList(generics.ListAPIView):
 @api_view(['GET'])
 def get_routes(request):
     routes = [
-        '/conditions/',
+        'conditions/',
     ]
 
     return Response(routes)
