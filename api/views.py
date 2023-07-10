@@ -8,10 +8,14 @@ from django.core.cache import cache
 
 class ContentFinderConditionList(generics.ListAPIView):
     serializer_class = ContentFinderConditionSerializer
-    
+
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = ContentFinderConditionSerializer(queryset, many=True)
+
+        if not queryset.exists():
+            error_message = 'No conditions found with the given parameters'
+            return Response({'error': error_message}, status=status.HTTP_404_NOT_FOUND)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -25,7 +29,7 @@ class ContentFinderConditionList(generics.ListAPIView):
         if cached_response:
             return cached_response
 
-        if not min_level or not max_level:
+        if not type_id or not min_level or not max_level:
             return ContentFinderCondition.objects.none()
 
         return ContentFinderCondition.objects.filter(
@@ -33,6 +37,7 @@ class ContentFinderConditionList(generics.ListAPIView):
             class_job_level_required__lte=max_level,
             content_type_id=type_id
         )
+
 
 @api_view(['GET'])
 def get_routes(request):
