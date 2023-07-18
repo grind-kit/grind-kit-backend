@@ -11,7 +11,7 @@ class ContentFinderConditionList(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        serializer = ContentFinderConditionSerializer(queryset, many=True)
+        serializer = self.get_serializer(queryset, many=True)
 
         if not queryset.exists():
             error_message = 'No conditions found with the given parameters'
@@ -23,6 +23,8 @@ class ContentFinderConditionList(generics.ListAPIView):
         type_id = self.request.query_params.get('type')
         min_level = self.request.query_params.get('min')
         max_level = self.request.query_params.get('max')
+
+        # For caching
         cache_key = f'content_finder_conditions_{type_id}_{min_level}_{max_level}'
         cached_response = cache.get(cache_key)
 
@@ -32,11 +34,16 @@ class ContentFinderConditionList(generics.ListAPIView):
         if not type_id or not min_level or not max_level:
             return ContentFinderCondition.objects.none()
 
-        return ContentFinderCondition.objects.filter(
+        queryset = ContentFinderCondition.objects.filter(
             class_job_level_required__gte=min_level,
             class_job_level_required__lte=max_level,
             content_type_id=type_id
         )
+
+        return queryset
+    
+    def get_serializer(self, *args, **kwargs):
+        return self.serializer_class(*args, **kwargs)
 
 
 @api_view(['GET'])

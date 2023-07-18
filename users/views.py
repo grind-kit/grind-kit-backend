@@ -65,24 +65,19 @@ class UserLogin(APIView):
 
 class UserBookmarkListCreate(generics.ListCreateAPIView):
     serializer_class = UserBookmarkGetSerializer
-    queryset = UserBookmark.objects.all()
 
-    def create(self, request, *args, **kwargs):
-        user_id = request.data.get('user_id')
-        content_finder_condition_id = request.data.get(
-            'content_finder_condition_id')
-        content_type_id = request.data.get('content_type_id')
+    def list(self, request, user_id, *args, **kwargs):
+        queryset = self.get_queryset(user_id)
+        serializer = self.get_serializer(queryset, many=True)
 
-        if not user_id or not content_finder_condition_id or not content_type_id:
-            return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data)
 
-        return super().create(request, *args, **kwargs)
-
-    def get_queryset(self):
-        user_id = self.request.query_params.get('user_id')
+    def get_queryset(self, user_id):
         queryset = UserBookmark.objects.filter(user_id=user_id)
-
         return queryset
+
+    def get_serializer(self, *args, **kwargs):
+        return self.serializer_class(*args, **kwargs)
 
 
 class UserBookmarkUpdate(generics.RetrieveUpdateAPIView):
@@ -107,7 +102,7 @@ class UserBookmarkUpdate(generics.RetrieveUpdateAPIView):
 def get_routes(request):
     routes = [
         '<int:user_id>/bookmarks/',
-        'users/<int:user_id>/bookmarks/<int:bookmark_id>',
+        '<int:user_id>/bookmarks/<int:bookmark_id>',
     ]
 
     return Response(routes)
