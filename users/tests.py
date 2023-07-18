@@ -46,7 +46,8 @@ class BookmarksEndpointTest(TestCase):
 
     def test_create_user_bookmark_with_invalid_user_id(self):
 
-        url = reverse('list-create-bookmark', kwargs={'user_id': 1})
+        # Invalid user_id
+        url = reverse('list-create-bookmark', kwargs={'user_id': 999})
 
         test_content_finder_condition = ContentFinderCondition.objects.create(
             id=1,
@@ -59,7 +60,7 @@ class BookmarksEndpointTest(TestCase):
         )
 
         data = {
-            'user_id': 1,
+            'user_id': 999,
             'content_finder_condition_id': test_content_finder_condition.id,
             'content_type_id': test_content_finder_condition.content_type_id
         }
@@ -71,8 +72,35 @@ class BookmarksEndpointTest(TestCase):
 
         # Check that we throw an error for the invalid user_id
         expected = {
-            'user_id': [ErrorDetail(string='Invalid pk "1" - object does not exist.', code='does_not_exist')]
+            'user_id': [ErrorDetail(string='Invalid pk "999" - object does not exist.', code='does_not_exist')]
         }
+        self.assertEqual(response.json(), expected)
+
+    def test_create_user_bookmark_with_invalid_content_finder_condition(self):
+        test_user = FirebaseUser.objects.create_user(
+            username='John Doe',
+            email='john_doe@gmail.com',
+        )
+
+        url = reverse('list-create-bookmark', kwargs={'user_id': test_user.id})
+
+        data = {
+            'user_id': test_user.id,
+            # Invalid content_finder_condition and content_type_id
+            'content_finder_condition_id': 999,
+            'content_type_id': 999
+        }
+
+        response = self.client.post(url, data, format='json')
+
+        expected = {
+            'content_finder_condition_id': [ErrorDetail(string='Invalid pk "999" - object does not exist.', code='does_not_exist')]
+        }
+
+        # Check that we return a 400 Bad Request
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Check that we throw an error for the invalid content_finder_condition_id
         self.assertEqual(response.json(), expected)
 
     def tearDown(self):
