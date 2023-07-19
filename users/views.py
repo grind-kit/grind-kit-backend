@@ -72,7 +72,8 @@ class UserBookmarkListCreate(generics.ListCreateAPIView):
 
         return Response(serializer.data)
 
-    def get_queryset(self, user_id):
+    @staticmethod
+    def get_queryset(user_id):
         queryset = UserBookmark.objects.filter(user_id=user_id)
         return queryset
 
@@ -84,15 +85,15 @@ class UserBookmarkRetrieveUpdate(generics.RetrieveUpdateAPIView):
 
     def get(self, request, user_id, bookmark_id, *args, **kwargs):
         queryset = self.get_queryset(user_id, bookmark_id)
-        serializer = self.get_serializer(queryset, many=False)
+        serializer = self.get_serializer(queryset)
 
         return Response(serializer.data)
 
     def get_queryset(self, user_id, bookmark_id):
-        queryset = UserBookmark.objects.filter(user_id=user_id, id=bookmark_id)
+        queryset = UserBookmark.objects.get(user_id=user_id, id=bookmark_id)
 
         return queryset
-    
+
     def get_serializer(self, *args, **kwargs):
         if self.request.method == 'GET':
             return UserBookmarkGetSerializer(*args, **kwargs)

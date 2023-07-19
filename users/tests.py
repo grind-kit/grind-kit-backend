@@ -5,12 +5,12 @@ from users.models import FirebaseUser, UserBookmark
 from api.models import ContentFinderCondition
 from rest_framework import status
 from rest_framework.exceptions import ErrorDetail
-from django.core.management import call_command
+from .serializers import UserBookmarkGetSerializer
+
 
 class BookmarksEndpointTest(TestCase):
     def setUp(self):
         self.client = APIClient()
-        call_command('flush', verbosity=0, interactive=False)
 
     @classmethod
     def setUpTestData(cls):
@@ -20,7 +20,9 @@ class BookmarksEndpointTest(TestCase):
             email='john_doe@gmail.com',
         )
 
-        cls.test_content_finder_condition = ContentFinderCondition.objects.create(
+        # Create a ContentFinderCondition and UserBookmark for testing the GET endpoint
+
+        cls.test_content_finder_condition_1 = ContentFinderCondition.objects.create(
             id=1,
             name='Test Content Finder Condition',
             class_job_level_required=123,
@@ -32,37 +34,57 @@ class BookmarksEndpointTest(TestCase):
 
         cls.test_bookmark = UserBookmark.objects.create(
             user_id=cls.test_user,
-            content_finder_condition_id=cls.test_content_finder_condition,
+            content_finder_condition_id=cls.test_content_finder_condition_1,
             content_type_id=789,
         )
 
-    # def test_get_user_bookmark(self):
-    #     url = reverse("retrieve-update-bookmark",
-    #                   kwargs={'user_id': self.test_user.id, 'bookmark_id': self.test_bookmark.id})
+        # Create another ContentFinderCondition for testing the POST endpoint
 
-    #     response = self.client.get(url, format='json')
-    #     print(response.data, "🌯")
+        cls.test_content_finder_condition_2 = ContentFinderCondition.objects.create(
+            id=2,
+            name='Another Test Content Finder Condition',
+            class_job_level_required=123,
+            item_level_required=456,
+            url='https://www.google.com',
+            content_type_id=789,
+            accept_class_job_category={'PLD': '123'},
+        )
+
+    def test_get_user_bookmark(self):
+        url = reverse("retrieve-update-bookmark",
+                      kwargs={'user_id': self.__class__.test_user.id, 'bookmark_id': self.__class__.test_bookmark.id})
+
+        response = self.client.get(url, format='json')
+
+        # Check that we return a 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check that the response data matches the test data
+
+        expected = UserBookmarkGetSerializer(self.__class__.test_bookmark).data
+
+        self.assertEqual(response.json(), expected)
 
     def test_create_user_bookmark(self):
 
         url = reverse('list-create-bookmark',
-                      kwargs={'user_id': self.test_user.id})
+                      kwargs={'user_id': self.__class__.test_user.id})
 
         data = {
-            'user_id': self.test_user.id,
-            'content_finder_condition_id': self.test_content_finder_condition.id,
-            'content_type_id': self.test_content_finder_condition.content_type_id,
+            'user_id': self.__class__.test_user.id,
+            'content_finder_condition_id': self.__class__.test_content_finder_condition_2.id,
+            'content_type_id': self.__class__.test_content_finder_condition_2.content_type_id,
         }
 
         response = self.client.post(url, data, format='json')
-        print(response.data, "🌯")
 
         # Check that we return a 201 Created
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # Check that a UserBookmark was created, and that it has the correct user_id
-        self.assertEqual(UserBookmark.objects.count(), 1)
-        self.assertEqual(UserBookmark.objects.first().user_id, self.test_user)
+        # Check that a UserBookmark was created (there should be 2 now)
+        self.assertEqual(UserBookmark.objects.count(), 2)
+        self.assertEqual(UserBookmark.objects.first().user_id,
+                         self.__class__.test_user)
 
     def test_create_user_bookmark_with_invalid_user_id(self):
 
@@ -71,8 +93,8 @@ class BookmarksEndpointTest(TestCase):
 
         data = {
             'user_id': 999,
-            'content_finder_condition_id': self.test_content_finder_condition.id,
-            'content_type_id': self.test_content_finder_condition.content_type_id
+            'content_finder_condition_id': self.__class__.test_content_finder_condition_1.id,
+            'content_type_id': self.__class__.test_content_finder_condition_1.content_type_id
         }
 
         response = self.client.post(url, data, format='json')
@@ -89,10 +111,10 @@ class BookmarksEndpointTest(TestCase):
     def test_create_user_bookmark_with_invalid_content_finder_condition(self):
 
         url = reverse('list-create-bookmark',
-                      kwargs={'user_id': self.test_user.id})
+                      kwargs={'user_id': self.__class__.test_user.id})
 
         data = {
-            'user_id': self.test_user.id,
+            'user_id': self.__class__.test_user.id,
             # Invalid content_finder_condition and content_type_id
             'content_finder_condition_id': 999,
             'content_type_id': 999
@@ -112,9 +134,10 @@ class BookmarksEndpointTest(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # Delete the created objects in reverse order because of foreign key constraints
+        # Delete the created objects in reverse order in case of dependencies
         cls.test_bookmark.delete()
-        cls.test_content_finder_condition.delete()
+        cls.test_content_finder_condition_1.delete()
+        cls.test_content_finder_condition_2.delete()
         cls.test_user.delete()
 
         super().tearDownClass()
