@@ -14,11 +14,11 @@ services:
     build:
       context: .
       dockerfile: .docker/django/Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8002
     env_file:
       - ./.env.local
     ports:
-      - "8000:8000"
+      - "8002:800"
     volumes:
       - .:/code
       - ./static:/static
