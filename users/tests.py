@@ -64,6 +64,22 @@ class BookmarksEndpointTest(TestCase):
 
         self.assertEqual(response.json(), expected)
 
+    def test_update_user_bookmark(self):
+        url = reverse("retrieve-update-bookmark",
+                      kwargs={'user_id': self.__class__.test_user.id, 'bookmark_id': self.__class__.test_bookmark.id})
+        
+        data = {
+            'value' : 0
+        }
+
+        response = self.client.patch(url, data, format='json')
+
+        # Check that we return a 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check that the value is updated
+        self.assertEqual(response.json()['value'], 0)
+
     def test_create_user_bookmark(self):
 
         url = reverse('list-create-bookmark',
