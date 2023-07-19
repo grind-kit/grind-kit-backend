@@ -60,7 +60,6 @@ class BookmarksEndpointTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Check that the response data matches the test data
-
         expected = UserBookmarkGetSerializer(self.__class__.test_bookmark).data
 
         self.assertEqual(response.json(), expected)

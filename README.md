@@ -1,6 +1,7 @@
 # Grind Kit - Backend
 
 ## Technologies
+
 - Python
 - Django
 - PostgreSQL
@@ -23,6 +24,17 @@
 
 - Run `docker-compose exec app python manage.py test` while the container is running to run all tests
 - To run a specific test, run `docker-compose exec app python manage.py test <app>.<test_file>.<test_class>.<test_function>`
+
+## Contributing
+
+- Create a new branch off of `development` with the name of the feature you're working on
+- Naming convention: `feat/<feature_name>`, `fix/<fix_name>`, `refactor/<refactor_name>`
+- For example, if you're working on fixing the login page, your branch name would be `fix/login-page`
+- For your commits, please follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification
+- If you're working on a feature that requires a new model, or a change to an existing model, please create a migration file for it
+- When you're done with your feature branch, create a pull request from your branch to `development`
+- In the pull request description, please include what you added/changed, and any other relevant information
+- Once your pull request is approved, it will be merged into `development`
 
 ## URLs
 
