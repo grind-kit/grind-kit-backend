@@ -11,13 +11,12 @@ class BookmarksEndpointTest(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-    def test_create_user_bookmark(self):
-        test_user = FirebaseUser.objects.create_user(
+        self.test_user = FirebaseUser.objects.create_user(
             username='John Doe',
             email='john_doe@gmail.com',
         )
 
-        test_content_finder_condition = ContentFinderCondition.objects.create(
+        self.test_content_finder_condition = ContentFinderCondition.objects.create(
             id=1,
             name='Test Content Finder Condition',
             class_job_level_required=123,
@@ -27,12 +26,17 @@ class BookmarksEndpointTest(TestCase):
             accept_class_job_category={'WAR': '123'},
         )
 
-        url = reverse('list-create-bookmark', kwargs={'user_id': test_user.id})
+    # def test_update_user_bookmark(self):
+
+    def test_create_user_bookmark(self):
+
+        url = reverse('list-create-bookmark',
+                      kwargs={'user_id': self.test_user.id})
 
         data = {
-            'user_id': test_user.id,
-            'content_finder_condition_id': test_content_finder_condition.id,
-            'content_type_id': test_content_finder_condition.content_type_id,
+            'user_id': self.test_user.id,
+            'content_finder_condition_id': self.test_content_finder_condition.id,
+            'content_type_id': self.test_content_finder_condition.content_type_id,
         }
 
         response = self.client.post(url, data, format='json')
@@ -42,27 +46,17 @@ class BookmarksEndpointTest(TestCase):
 
         # Check that a UserBookmark was created, and that it has the correct user_id
         self.assertEqual(UserBookmark.objects.count(), 1)
-        self.assertEqual(UserBookmark.objects.first().user_id, test_user)
+        self.assertEqual(UserBookmark.objects.first().user_id, self.test_user)
 
     def test_create_user_bookmark_with_invalid_user_id(self):
 
         # Invalid user_id
         url = reverse('list-create-bookmark', kwargs={'user_id': 999})
 
-        test_content_finder_condition = ContentFinderCondition.objects.create(
-            id=1,
-            name='Test Content Finder Condition',
-            class_job_level_required=123,
-            item_level_required=456,
-            url='https://www.google.com',
-            content_type_id=789,
-            accept_class_job_category={'WAR': '123'},
-        )
-
         data = {
             'user_id': 999,
-            'content_finder_condition_id': test_content_finder_condition.id,
-            'content_type_id': test_content_finder_condition.content_type_id
+            'content_finder_condition_id': self.test_content_finder_condition.id,
+            'content_type_id': self.test_content_finder_condition.content_type_id
         }
 
         response = self.client.post(url, data, format='json')
@@ -77,15 +71,12 @@ class BookmarksEndpointTest(TestCase):
         self.assertEqual(response.json(), expected)
 
     def test_create_user_bookmark_with_invalid_content_finder_condition(self):
-        test_user = FirebaseUser.objects.create_user(
-            username='John Doe',
-            email='john_doe@gmail.com',
-        )
 
-        url = reverse('list-create-bookmark', kwargs={'user_id': test_user.id})
+        url = reverse('list-create-bookmark',
+                      kwargs={'user_id': self.test_user.id})
 
         data = {
-            'user_id': test_user.id,
+            'user_id': self.test_user.id,
             # Invalid content_finder_condition and content_type_id
             'content_finder_condition_id': 999,
             'content_type_id': 999
@@ -104,4 +95,5 @@ class BookmarksEndpointTest(TestCase):
         self.assertEqual(response.json(), expected)
 
     def tearDown(self):
-        pass
+        self.test_user.delete()
+        self.test_content_finder_condition.delete()

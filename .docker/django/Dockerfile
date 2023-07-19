@@ -1,6 +1,6 @@
 FROM python:3.9
 
-EXPOSE 8002
+EXPOSE 8000
 
 RUN apt-get update
 RUN apt-get install -y vim

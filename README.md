@@ -9,7 +9,7 @@
 
 1. Install Docker on your machine
 2. Clone this repository to your machine
-3. Copy the `.env.local.example` file to a new file called `.env.local` at the root of the project, and fill in the values
+3. Copy the `.env.local.example` file to a new file called `.env` at the root of the project, and fill in the values
 4. Run `docker-compose build` to build the Docker image
 5. Run `docker-compose up` to start the Docker container
 
@@ -25,5 +25,5 @@ Run `docker-compose exec app python manage.py test` while the container is runni
 
 ## URLs
 
-- Local: http://localhost:8002
-- Admin: http://localhost:8002/admin
+- Local: http://localhost:8000
+- Admin: http://localhost:8000/admin

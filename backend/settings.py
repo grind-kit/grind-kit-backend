@@ -8,6 +8,7 @@ import sys
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Secret key
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # Disable debug mode in production
@@ -36,12 +37,14 @@ cred = credentials.Certificate({
 firebase_admin.initialize_app(cred)
 
 
-ALLOWED_HOSTS = ['http://localhost:8000', 'http://localhost:3000', 'localhost', 'grind-kit-backend.herokuapp.com']
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
 ]
 CORS_ALLOW_HEADERS = ['Authorization', 'Content-Type']
+
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
