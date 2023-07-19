@@ -80,22 +80,24 @@ class UserBookmarkListCreate(generics.ListCreateAPIView):
         return self.serializer_class(*args, **kwargs)
 
 
-class UserBookmarkUpdate(generics.RetrieveUpdateAPIView):
+class UserBookmarkRetrieveUpdate(generics.RetrieveUpdateAPIView):
 
-    def get_queryset(self):
-        user_id = self.request.query_params.get('user_id')
-        queryset = UserBookmark.objects.filter(user_id=user_id)
+    def get(self, request, user_id, bookmark_id, *args, **kwargs):
+        queryset = self.get_queryset(user_id, bookmark_id)
+        serializer = self.get_serializer(queryset, many=False)
+
+        return Response(serializer.data)
+
+    def get_queryset(self, user_id, bookmark_id):
+        queryset = UserBookmark.objects.filter(user_id=user_id, id=bookmark_id)
 
         return queryset
-
-    def get_serializer_class(self):
+    
+    def get_serializer(self, *args, **kwargs):
         if self.request.method == 'GET':
-            return UserBookmarkGetSerializer
+            return UserBookmarkGetSerializer(*args, **kwargs)
         elif self.request.method == 'PATCH':
-            return UserBookmarkUpdateSerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+            return UserBookmarkUpdateSerializer(*args, **kwargs)
 
 
 @api_view(['GET'])

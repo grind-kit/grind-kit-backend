@@ -5,18 +5,22 @@ from users.models import FirebaseUser, UserBookmark
 from api.models import ContentFinderCondition
 from rest_framework import status
 from rest_framework.exceptions import ErrorDetail
-
+from django.core.management import call_command
 
 class BookmarksEndpointTest(TestCase):
     def setUp(self):
         self.client = APIClient()
+        call_command('flush', verbosity=0, interactive=False)
 
-        self.test_user = FirebaseUser.objects.create_user(
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.test_user = FirebaseUser.objects.create(
             username='John Doe',
             email='john_doe@gmail.com',
         )
 
-        self.test_content_finder_condition = ContentFinderCondition.objects.create(
+        cls.test_content_finder_condition = ContentFinderCondition.objects.create(
             id=1,
             name='Test Content Finder Condition',
             class_job_level_required=123,
@@ -26,7 +30,18 @@ class BookmarksEndpointTest(TestCase):
             accept_class_job_category={'WAR': '123'},
         )
 
-    # def test_update_user_bookmark(self):
+        cls.test_bookmark = UserBookmark.objects.create(
+            user_id=cls.test_user,
+            content_finder_condition_id=cls.test_content_finder_condition,
+            content_type_id=789,
+        )
+
+    # def test_get_user_bookmark(self):
+    #     url = reverse("retrieve-update-bookmark",
+    #                   kwargs={'user_id': self.test_user.id, 'bookmark_id': self.test_bookmark.id})
+
+    #     response = self.client.get(url, format='json')
+    #     print(response.data, "🌯")
 
     def test_create_user_bookmark(self):
 
@@ -40,6 +55,7 @@ class BookmarksEndpointTest(TestCase):
         }
 
         response = self.client.post(url, data, format='json')
+        print(response.data, "🌯")
 
         # Check that we return a 201 Created
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -94,6 +110,11 @@ class BookmarksEndpointTest(TestCase):
         # Check that we throw an error for the invalid content_finder_condition_id
         self.assertEqual(response.json(), expected)
 
-    def tearDown(self):
-        self.test_user.delete()
-        self.test_content_finder_condition.delete()
+    @classmethod
+    def tearDownClass(cls):
+        # Delete the created objects in reverse order because of foreign key constraints
+        cls.test_bookmark.delete()
+        cls.test_content_finder_condition.delete()
+        cls.test_user.delete()
+
+        super().tearDownClass()

@@ -21,7 +21,8 @@
 
 ## Running Tests
 
-Run `docker-compose exec app python manage.py test` while the container is running
+- Run `docker-compose exec app python manage.py test` while the container is running to run all tests
+- To run a specific test, run `docker-compose exec app python manage.py test <app>.<test_file>.<test_class>.<test_function>`
 
 ## URLs
 
