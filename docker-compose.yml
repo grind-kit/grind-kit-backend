@@ -21,12 +21,12 @@ services:
       - "8002:800"
     volumes:
       - .:/code
-      - ./static:/static
+      - ./staticfiles:/staticfiles
       - ./media:/media
     depends_on:
       - db
 
 volumes:
   pg-data:
-  static:
+  staticfiles:
   media:
