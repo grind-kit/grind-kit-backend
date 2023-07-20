@@ -99,6 +99,9 @@ class BookmarksEndpointTest(TestCase):
         # Check that the value is updated
         self.assertEqual(response.json()['value'], 0)
 
+        # Check that the updated_at field is not None
+        self.assertIsNotNone(response.json()['updated_at'])
+
     def test_create_user_bookmark(self):
 
         url = reverse('list-create-bookmark',

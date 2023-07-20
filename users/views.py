@@ -95,6 +95,9 @@ class UserBookmarkRetrieveUpdate(generics.RetrieveUpdateAPIView):
             queryset, data=request.data, partial=True)
 
         if serializer.is_valid():
+            updated_at = timezone.now()
+            serializer.validated_data['updated_at'] = updated_at
+
             serializer.save()
             return Response(serializer.data)
 
