@@ -88,15 +88,16 @@ class UserBookmarkRetrieveUpdate(generics.RetrieveUpdateAPIView):
         serializer = self.get_serializer(queryset)
 
         return Response(serializer.data)
-    
+
     def patch(self, request, user_id, bookmark_id, *args, **kwargs):
         queryset = self.get_queryset(user_id, bookmark_id)
-        serializer = self.get_serializer(queryset, data=request.data, partial=True)
+        serializer = self.get_serializer(
+            queryset, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self, user_id, bookmark_id):
