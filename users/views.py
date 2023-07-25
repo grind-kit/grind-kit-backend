@@ -4,7 +4,53 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import FirebaseUser, FirebaseUserToken, UserBookmark
-from .serializers import FirebaseUserSerializer, FirebaseUserTokenSerializer, UserBookmarkGetSerializer, UserBookmarkUpdateSerializer
+from .serializers import FirebaseUserSerializer, FirebaseUserTokenSerializer, UserBookmarkGetSerializer, UserBookmarkUpdateSerializer, UserSerializer
+
+
+# class UserGet(generics.CreateAPIView):
+#     serializer_class = UserSerializer
+
+#     def create(self, request):
+#         username = request.data.get('username')
+#         queryset = self.get_queryset(username)
+#         serializer = self.get_serializer(queryset)
+
+#         return Response(serializer.data)
+
+
+#     def get_queryset(self, username):
+#         queryset = FirebaseUser.objects.get(username=username)
+#         return queryset
+
+#     def get_serializer(self, *args, **kwargs):
+#         return self.serializer_class(*args, **kwargs)
+
+
+class UserUpdate(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+
+    def patch(self, request):
+        username = request.data.get('username')
+        queryset = self.get_queryset(username)
+
+        serializer = self.get_serializer(
+            queryset, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            updated_at = timezone.now()
+            serializer.validated_data['updated_at'] = updated_at
+
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self, username):
+        queryset = FirebaseUser.objects.get(username=username)
+        return queryset
+
+    def get_serializer(self, *args, **kwargs):
+        return self.serializer_class(*args, **kwargs)
 
 
 class UserCreate(generics.CreateAPIView):

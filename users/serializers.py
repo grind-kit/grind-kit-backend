@@ -44,3 +44,14 @@ class UserBookmarkUpdateSerializer(serializers.ModelSerializer):
             'value',
             'updated_at'
         ]
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FirebaseUser
+        fields = [
+            'id',
+            'username',
+            'lodestone_id',
+            'created_at',
+            'updated_at',
+        ]
