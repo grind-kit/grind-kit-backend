@@ -5,7 +5,8 @@ from .models import *
 class FirebaseUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = FirebaseUser
-        fields = ['id', 'username', 'lodestone_id']
+        fields = ['id', 'username', 'email', 'lodestone_id',
+                  'created_at', 'updated_at', 'password']
 
     def create(self, validated_data):
         user = FirebaseUser.objects.create_user(
@@ -45,7 +46,7 @@ class UserBookmarkUpdateSerializer(serializers.ModelSerializer):
             'updated_at'
         ]
 
-class UserSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FirebaseUser
         fields = [

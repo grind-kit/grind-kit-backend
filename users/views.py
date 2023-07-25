@@ -4,35 +4,21 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import FirebaseUser, FirebaseUserToken, UserBookmark
-from .serializers import FirebaseUserSerializer, FirebaseUserTokenSerializer, UserBookmarkGetSerializer, UserBookmarkUpdateSerializer, UserSerializer
+from .serializers import FirebaseUserSerializer, FirebaseUserTokenSerializer, UserBookmarkGetSerializer, UserBookmarkUpdateSerializer, UserProfileSerializer
+from django.shortcuts import get_object_or_404
+
+class UserProfileRetrieveUpdate(generics.RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
+
+    def get(self, request, pk):
+        queryset = self.get_queryset(pk)
+        serializer = self.get_serializer(queryset)
+
+        return Response(serializer.data)
 
 
-# class UserGet(generics.CreateAPIView):
-#     serializer_class = UserSerializer
-
-#     def create(self, request):
-#         username = request.data.get('username')
-#         queryset = self.get_queryset(username)
-#         serializer = self.get_serializer(queryset)
-
-#         return Response(serializer.data)
-
-
-#     def get_queryset(self, username):
-#         queryset = FirebaseUser.objects.get(username=username)
-#         return queryset
-
-#     def get_serializer(self, *args, **kwargs):
-#         return self.serializer_class(*args, **kwargs)
-
-
-class UserUpdate(generics.UpdateAPIView):
-    serializer_class = UserSerializer
-
-    def patch(self, request):
-        username = request.data.get('username')
-        queryset = self.get_queryset(username)
-
+    def patch(self, request, pk):
+        queryset = self.get_queryset(pk)
         serializer = self.get_serializer(
             queryset, data=request.data, partial=True)
 
@@ -45,8 +31,8 @@ class UserUpdate(generics.UpdateAPIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_queryset(self, username):
-        queryset = FirebaseUser.objects.get(username=username)
+    def get_queryset(self, pk):
+        queryset = get_object_or_404(FirebaseUser, pk=pk)
         return queryset
 
     def get_serializer(self, *args, **kwargs):
@@ -166,6 +152,9 @@ def get_routes(request):
     routes = [
         '<int:user_id>/bookmarks/',
         '<int:user_id>/bookmarks/<int:bookmark_id>',
+        '<int:pk>/',
+        'auth/signup/',
+        'auth/login/',
     ]
 
     return Response(routes)
