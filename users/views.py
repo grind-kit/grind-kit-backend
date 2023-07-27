@@ -40,7 +40,6 @@ class UserProfileRetrieveUpdate(generics.RetrieveUpdateAPIView):
 
 
 class UserCreate(generics.CreateAPIView):
-    queryset = FirebaseUser.objects.all()
     serializer_class = FirebaseUserSerializer
 
     def create(self, request, *args, **kwargs):
@@ -48,13 +47,30 @@ class UserCreate(generics.CreateAPIView):
         username = request.data.get('username')
         email = request.data.get('email')
         password = request.data.get('password')
+        id_token = request.data.get('idToken')
+        refresh_token = request.data.get('refreshToken')
 
-        # Check if required data is present
-        if not username or not email or not password:
+        if not username or not email or not password or not id_token:
             return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
-
+        
         # Create user
-        return super().create(request, *args, **kwargs)
+        user_serializer = self.get_serializer(data=request.data)
+        user_serializer.is_valid(raise_exception=True)
+        user = user_serializer.save()
+
+        # Create user token
+        token_data = {
+            'user': user.id,
+            'id_token': id_token,
+            'refresh_token': refresh_token
+        }
+
+        token_serializer = FirebaseUserTokenSerializer(data=token_data)
+        token_serializer.is_valid(raise_exception=True)
+        token_serializer.save()
+
+        # Return a response
+        return Response(user_serializer.data, status=status.HTTP_201_CREATED)
 
 
 class UserLogin(APIView):

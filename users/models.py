@@ -66,8 +66,8 @@ class FirebaseUser (AbstractUser, PermissionsMixin):
 class FirebaseUserToken (models.Model):
     # Users can only have one token, so use OneToOneField over ForeignKey
     user = models.OneToOneField(FirebaseUser, on_delete=models.CASCADE)
-    id_token = models.CharField(max_length=500)
-    refresh_token = models.CharField(max_length=500, null=True, blank=True)
+    id_token = models.CharField(max_length=2000)
+    refresh_token = models.CharField(max_length=2000, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=None, null=True, blank=True)
 
