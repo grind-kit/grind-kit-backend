@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from firebase_admin import auth
 from decouple import config
 from django.conf import settings
+from rest_framework.status import HTTP_401_UNAUTHORIZED
 
 class FirebaseAuthenticationMiddleware:
     def __init__(self, get_response):
@@ -15,13 +16,13 @@ class FirebaseAuthenticationMiddleware:
         auth_header = request.META.get('HTTP_AUTHORIZATION')
         path_info = request.META.get('PATH_INFO')
 
-        if path_info.startswith('/users/auth/signup') and request.method == 'POST' or path_info.startswith('/admin/'):
-            # Allow access to user creation and admin panel without Firebase token
+        if path_info.startswith('/admin/'):
+            # Allow access to admin panel without Firebase token
             response = self.get_response(request)
             return response
 
         if not auth_header:
-            return JsonResponse({'error': 'Authorization header missing'}, status=401)
+            return JsonResponse({'error': 'Authorization header missing'}, status=HTTP_401_UNAUTHORIZED)
 
         try:
             id_token = auth_header.split(' ').pop()
@@ -45,7 +46,7 @@ class FirebaseAuthenticationMiddleware:
 
             request.user_id = decoded_token['uid']
         except ValueError as e:
-            return JsonResponse({'error': str(e)}, status=401)
+            return JsonResponse({'error': str(e)}, status=HTTP_401_UNAUTHORIZED)
 
         response = self.get_response(request)
         return response
