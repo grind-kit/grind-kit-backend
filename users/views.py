@@ -7,6 +7,7 @@ from .models import FirebaseUser, FirebaseUserToken, UserBookmark
 from .serializers import FirebaseUserSerializer, FirebaseUserTokenSerializer, UserBookmarkGetSerializer, UserBookmarkUpdateSerializer, UserProfileSerializer
 from django.shortcuts import get_object_or_404
 
+
 class UserProfileRetrieveUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
 
@@ -15,7 +16,6 @@ class UserProfileRetrieveUpdate(generics.RetrieveUpdateAPIView):
         serializer = self.get_serializer(queryset)
 
         return Response(serializer.data)
-
 
     def patch(self, request, pk):
         queryset = self.get_queryset(pk)
@@ -52,7 +52,7 @@ class UserCreate(generics.CreateAPIView):
 
         if not username or not email or not password or not id_token:
             return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Create user
         user_serializer = self.get_serializer(data=request.data)
         user_serializer.is_valid(raise_exception=True)
@@ -71,6 +71,36 @@ class UserCreate(generics.CreateAPIView):
 
         # Return a response
         return Response(user_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class UserTokenRefresh(generics.UpdateAPIView):
+    serializer_class = FirebaseUserTokenSerializer
+
+    def patch(self, request):
+        username = request.data.get('username')
+        new_token = request.data.get('new_token')
+
+        if not new_token:
+            return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get user object
+        user = get_object_or_404(FirebaseUser, username=username)
+
+        # Get user token object
+        user_token = get_object_or_404(FirebaseUserToken, user=user)
+
+        # Update user token using new token
+        serializer = self.get_serializer(
+            user_token, data={'id_token': new_token}, partial=True)
+
+        if serializer.is_valid():
+            updated_at = timezone.now()
+            serializer.validated_data['updated_at'] = updated_at
+
+            serializer.save()
+            return Response({'success': 'Token updated'}, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLogin(APIView):
