@@ -6,6 +6,8 @@ from rest_framework.views import APIView
 from .models import FirebaseUser, FirebaseUserToken, UserBookmark
 from .serializers import FirebaseUserSerializer, FirebaseUserTokenSerializer, UserBookmarkGetSerializer, UserBookmarkUpdateSerializer, UserProfileSerializer
 from django.shortcuts import get_object_or_404
+from decouple import config
+import requests
 
 
 class UserProfileRetrieveUpdate(generics.RetrieveUpdateAPIView):
@@ -73,34 +75,66 @@ class UserCreate(generics.CreateAPIView):
         return Response(user_serializer.data, status=status.HTTP_201_CREATED)
 
 
-class UserTokenRefresh(generics.UpdateAPIView):
-    serializer_class = FirebaseUserTokenSerializer
+class UserTokenRefresh(APIView):
+    def refresh_id_token(self, request):
+        # Check if request is POST
+        if request.method != 'POST':
+            return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def patch(self, request):
+        # Get username
         username = request.data.get('username')
-        new_token = request.data.get('new_token')
 
-        if not new_token:
+        # Check if username is present
+        if not username:
             return Response({'error': 'Missing required data'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Get user object
-        user = get_object_or_404(FirebaseUser, username=username)
-
-        # Get user token object
-        user_token = get_object_or_404(FirebaseUserToken, user=user)
-
-        # Update user token using new token
-        serializer = self.get_serializer(
-            user_token, data={'id_token': new_token}, partial=True)
-
-        if serializer.is_valid():
-            updated_at = timezone.now()
-            serializer.validated_data['updated_at'] = updated_at
-
-            serializer.save()
-            return Response({'success': 'Token updated'}, status=status.HTTP_200_OK)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Get user
+        try:
+            user = FirebaseUser.objects.get(username=username)
+        except FirebaseUser.DoesNotExist:
+            return Response({'error': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get user token
+        try:
+            user_token = FirebaseUserToken.objects.get(user=user)
+        except FirebaseUserToken.DoesNotExist:
+            return Response({'error': 'User token does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Get refresh token
+        refresh_token = user_token.refresh_token
+
+        # Firebase settings
+        firebase_api_key = config('FIREBASE_API_KEY')
+        refresh_url = f'https://securetoken.googleapis.com/v1/token?key={firebase_api_key}'
+        refresh_payload = {
+            'grant_type': 'refresh_token',
+            'refresh_token': refresh_token
+        }
+
+        try:
+            response = requests.post(refresh_url, data=refresh_payload)
+            response_data = response.json()
+
+            if 'id_token' in response_data:
+
+                # Update user token using new token
+                serializer = self.get_serializer(
+                    user_token, data={'id_token': response_data['id_token']}, partial=True)
+
+                if serializer.is_valid():
+                    updated_at = timezone.now()
+                    serializer.validated_data['updated_at'] = updated_at
+
+                    serializer.save(user=user_token)
+                    return Response({'id_token': response['id_token']}, status=status.HTTP_200_OK)
+
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            else:
+                return Response({'error': 'Invalid refresh token'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except requests.exceptions.RequestException as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLogin(APIView):
