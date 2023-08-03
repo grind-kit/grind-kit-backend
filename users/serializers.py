@@ -23,6 +23,11 @@ class FirebaseUserTokenSerializer(serializers.ModelSerializer):
         model = FirebaseUserToken
         fields = ['id', 'user', 'id_token',
                   'refresh_token', 'created_at', 'updated_at']
+        
+class FirebaseUserTokenRefreshSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FirebaseUserToken
+        fields = ['id', 'user', 'id_token', 'updated_at']
 
 
 class UserBookmarkGetSerializer(serializers.ModelSerializer):

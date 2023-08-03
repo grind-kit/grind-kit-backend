@@ -9,10 +9,6 @@ urlpatterns = [
     path('auth/signup/', views.UserCreate.as_view(), name="signup"),
     path('auth/login/', views.UserLogin.as_view(), name="login"),
 
-    # Token Refresh
-     path('auth/token/refresh/', views.UserTokenRefresh.as_view(), name="token-refresh"),
-
-
     # User Profile
     path('<int:pk>/', views.UserProfileRetrieveUpdate.as_view(), name='retrieve-update-profile'),
 

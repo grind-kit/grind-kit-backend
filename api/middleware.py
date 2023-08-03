@@ -16,8 +16,8 @@ class FirebaseAuthenticationMiddleware:
         auth_header = request.META.get('HTTP_AUTHORIZATION')
         path_info = request.META.get('PATH_INFO')
 
-        if path_info.startswith('/admin/'):
-            # Allow access to admin panel without Firebase token
+        # Allow access to admin panel and token refresh endpoint without authentication
+        if path_info.startswith('/admin/') or path_info.startswith('/users/auth/token/refresh/'):
             response = self.get_response(request)
             return response
 
