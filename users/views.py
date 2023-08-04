@@ -4,12 +4,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import FirebaseUser, FirebaseUserToken, UserBookmark
-from .serializers import FirebaseUserSerializer, FirebaseUserTokenSerializer, FirebaseUserTokenRefreshSerializer, UserBookmarkGetSerializer, UserBookmarkUpdateSerializer, UserProfileSerializer
+from .serializers import FirebaseUserSerializer, FirebaseUserRetrieveUpdateSerializer, FirebaseUserTokenCreateSerializer, FirebaseUserTokenUpdateSerializer, UserBookmarkRetrieveSerializer, UserBookmarkUpdateSerializer
 from django.shortcuts import get_object_or_404
 
 
 class UserProfileRetrieveUpdate(generics.RetrieveUpdateAPIView):
-    serializer_class = UserProfileSerializer
+    serializer_class = FirebaseUserRetrieveUpdateSerializer
 
     def get(self, request, pk):
         queryset = self.get_queryset(pk)
@@ -65,7 +65,7 @@ class UserCreate(generics.CreateAPIView):
             'refresh_token': refresh_token
         }
 
-        token_serializer = FirebaseUserTokenSerializer(data=token_data)
+        token_serializer = FirebaseUserTokenCreateSerializer(data=token_data)
         token_serializer.is_valid(raise_exception=True)
         token_serializer.save()
 
@@ -99,7 +99,7 @@ class UserLogin(APIView):
         if not user_token:
             return Response({'error': 'User token does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = FirebaseUserTokenRefreshSerializer(
+        serializer = FirebaseUserTokenUpdateSerializer(
             instance=user_token, data=request.data, partial=True)
 
         if serializer.is_valid():
@@ -118,7 +118,7 @@ class UserLogin(APIView):
 
 
 class UserBookmarkListCreate(generics.ListCreateAPIView):
-    serializer_class = UserBookmarkGetSerializer
+    serializer_class = UserBookmarkRetrieveSerializer
 
     def list(self, request, user_id, *args, **kwargs):
         queryset = self.get_queryset(user_id)
@@ -164,7 +164,7 @@ class UserBookmarkRetrieveUpdate(generics.RetrieveUpdateAPIView):
 
     def get_serializer(self, *args, **kwargs):
         if self.request.method == 'GET':
-            return UserBookmarkGetSerializer(*args, **kwargs)
+            return UserBookmarkRetrieveSerializer(*args, **kwargs)
         elif self.request.method == 'PATCH':
             return UserBookmarkUpdateSerializer(*args, **kwargs)
 

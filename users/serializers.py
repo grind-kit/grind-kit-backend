@@ -18,19 +18,26 @@ class FirebaseUserSerializer(serializers.ModelSerializer):
         return user
 
 
-class FirebaseUserTokenSerializer(serializers.ModelSerializer):
+class FirebaseUserRetrieveUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FirebaseUser
+        fields = ['id', 'lodestone_id', 'updated_at']
+
+
+class FirebaseUserTokenCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = FirebaseUserToken
         fields = ['id', 'user', 'id_token',
                   'refresh_token', 'created_at', 'updated_at']
-        
-class FirebaseUserTokenRefreshSerializer(serializers.ModelSerializer):
+
+
+class FirebaseUserTokenUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = FirebaseUserToken
         fields = ['id', 'user', 'id_token', 'updated_at']
 
 
-class UserBookmarkGetSerializer(serializers.ModelSerializer):
+class UserBookmarkRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBookmark
         fields = [
@@ -43,21 +50,12 @@ class UserBookmarkGetSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
 
+
 class UserBookmarkUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBookmark
         fields = [
+            'id',
             'value',
             'updated_at'
-        ]
-
-class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FirebaseUser
-        fields = [
-            'id',
-            'username',
-            'lodestone_id',
-            'created_at',
-            'updated_at',
         ]
