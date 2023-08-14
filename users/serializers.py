@@ -50,6 +50,27 @@ class UserBookmarkRetrieveSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
 
+class UserBookmarkCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserBookmark
+        fields = [
+            'id',
+            'user_id',
+            'content_type_id',
+            'content_finder_condition_id',
+            'value',
+        ]
+    
+    def create(self, validated_data):
+        bookmark = UserBookmark.objects.create(
+            user_id=validated_data["user_id"],
+            content_type_id=validated_data["content_type_id"],
+            content_finder_condition_id=validated_data["content_finder_condition_id"],
+            value=validated_data["value"],
+        )
+        bookmark.save()
+        return bookmark
+
 
 class UserBookmarkUpdateSerializer(serializers.ModelSerializer):
     class Meta:

@@ -98,4 +98,4 @@ class UserBookmark (models.Model):
         unique_together = ('user_id', 'content_finder_condition_id')
 
     def __str__(self):
-        return str(self.id) + " - " + self.content_finder_condition.name
+        return str(self.id) + " - " + str(self.user_id) + " - " + str(self.content_finder_condition_id)

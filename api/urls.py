@@ -6,5 +6,5 @@ urlpatterns = [
     path('', views.get_routes),
 
     # Content Finder Conditions
-    path('conditions/', views.ContentFinderConditionList.as_view(), name='list-conditions'),
+    path('conditions', views.ContentFinderConditionList.as_view(), name='list-conditions'),
 ]

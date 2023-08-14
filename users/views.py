@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import FirebaseUser, FirebaseUserToken, UserBookmark
-from .serializers import FirebaseUserSerializer, FirebaseUserRetrieveUpdateSerializer, FirebaseUserTokenCreateSerializer, FirebaseUserTokenUpdateSerializer, UserBookmarkRetrieveSerializer, UserBookmarkUpdateSerializer
+from .serializers import *
 from django.shortcuts import get_object_or_404
 
 
@@ -118,7 +118,6 @@ class UserLogin(APIView):
 
 
 class UserBookmarkListCreate(generics.ListCreateAPIView):
-    serializer_class = UserBookmarkRetrieveSerializer
 
     def list(self, request, user_id, *args, **kwargs):
         queryset = self.get_queryset(user_id)
@@ -126,13 +125,27 @@ class UserBookmarkListCreate(generics.ListCreateAPIView):
 
         return Response(serializer.data)
 
+    def create(self, request, user_id, *args, **kwargs):
+        print("request.data ✅", request.data)
+        serializer = self.get_serializer(data={
+            'user_id': user_id,
+            **request.data
+        })
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     @staticmethod
     def get_queryset(user_id):
         queryset = UserBookmark.objects.filter(user_id=user_id)
         return queryset
 
     def get_serializer(self, *args, **kwargs):
-        return self.serializer_class(*args, **kwargs)
+        if self.request.method == 'GET':
+            return UserBookmarkRetrieveSerializer(*args, **kwargs)
+        elif self.request.method == 'POST':
+            return UserBookmarkCreateSerializer(*args, **kwargs)
 
 
 class UserBookmarkRetrieveUpdate(generics.RetrieveUpdateAPIView):
