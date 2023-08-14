@@ -5,7 +5,7 @@ from users.models import FirebaseUser, UserBookmark
 from api.models import ContentFinderCondition
 from rest_framework import status
 from rest_framework.exceptions import ErrorDetail
-from .serializers import UserBookmarkGetSerializer
+from .serializers import UserBookmarkRetrieveSerializer
 
 
 class BookmarksEndpointTest(TestCase):
@@ -78,7 +78,7 @@ class BookmarksEndpointTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Check that the response data matches the test data
-        expected = UserBookmarkGetSerializer(
+        expected = UserBookmarkRetrieveSerializer(
             self.__class__.test_bookmark_1).data
 
         self.assertEqual(response.json(), expected)
