@@ -20,6 +20,18 @@
 
 6. To migrate the database, run `docker-compose exec app python manage.py migrate` while the container is running
 
+## Seeding the Database
+
+Grind Kit relies on seeded data from the open source XIVAPI to function properly. To seed the database, run the following command:
+
+`docker-compose exec app python manage.py seed_data`
+
+This will seed the database with the following:
+- Content Finder Conditions
+
+Please note that the XIVAPI is limited to 20 requests per second. To avoid hitting this limit, the seed command will pause for 1 second after every 20 requests. As a result, the seed command may take a while to complete. It is highly recommended that you run this command sparingly.
+
+
 ## Running Tests
 
 - Run `docker-compose exec app python manage.py test` while the container is running to run all tests

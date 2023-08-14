@@ -1,5 +1,6 @@
 import os
 import django
+import time
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 django.setup()
@@ -16,6 +17,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Define the base URL for the XIVAPI endpoint
         base_url = config('XIVAPI_URL') + 'ContentFinderCondition/'
+        api_key = config('XIVAPI_KEY')
+
+        # Rate limiting is 20 requests per second
+        requests_per_second = 20
+        interval = 1 / requests_per_second
 
         # Loop through pages 1-10 to retrieve all data
         for page in range(1, 11):
@@ -24,7 +30,7 @@ class Command(BaseCommand):
                 'language': 'en',
                 'columns': 'ID,Name,ClassJobLevelRequired,ItemLevelRequired,Url,ContentType.ID,AcceptClassJobCategory',
                 'page': page,
-                'private_key': config('XIVAPI_KEY'),
+                'private_key': api_key,
             }
 
             # Make the API request
@@ -44,6 +50,9 @@ class Command(BaseCommand):
                     accept_class_job_category=content['AcceptClassJobCategory'],
                 )
                 new_content.save()
+
+            # Introduce an artificial delay to avoid rate limiting
+            time.sleep(interval)
 
         self.stdout.write(self.style.SUCCESS(
             'Successfully seeded ContentFinderCondition data'))
