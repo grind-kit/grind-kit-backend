@@ -52,10 +52,6 @@ class ContentFinderConditionBookmarkList(generics.ListAPIView):
     serializer_class = UserBookmarkRetrieveSerializer
 
     def list(self, request, pk, *args, **kwargs):
-        if not pk:
-            error_message = 'No condition id provided'
-            return Response({'error': error_message}, status=status.HTTP_400_BAD_REQUEST)
-
         queryset = self.get_queryset(pk)
         serializer = self.get_serializer(queryset, many=True)
 

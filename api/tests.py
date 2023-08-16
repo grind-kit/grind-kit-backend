@@ -11,7 +11,7 @@ class ConditionsEndpointTest(TestCase):
             'max': '60'
         }
 
-        response = self.client.get('/api/conditions/', data=query_params)
+        response = self.client.get('/api/conditions', data=query_params)
 
         # Status code should be 200
         self.assertEqual(response.status_code, 200)
@@ -28,7 +28,7 @@ class ConditionsEndpointTest(TestCase):
 
     def test_get_conditions_no_query_params(self):
 
-        response = self.client.get('/api/conditions/', data={})
+        response = self.client.get('/api/conditions', data={})
 
         # Status code should be 404
         self.assertEqual(response.status_code, 404)

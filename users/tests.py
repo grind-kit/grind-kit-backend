@@ -111,6 +111,7 @@ class BookmarksEndpointTest(TestCase):
             'user_id': self.__class__.test_user.id,
             'content_finder_condition_id': self.__class__.test_content_finder_condition_2.id,
             'content_type_id': self.__class__.test_content_finder_condition_2.content_type_id,
+            'value': 1,
         }
 
         response = self.client.post(url, data, format='json')

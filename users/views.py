@@ -126,7 +126,6 @@ class UserBookmarkListCreate(generics.ListCreateAPIView):
         return Response(serializer.data)
 
     def create(self, request, user_id, *args, **kwargs):
-        print("request.data ✅", request.data)
         serializer = self.get_serializer(data={
             'user_id': user_id,
             **request.data
