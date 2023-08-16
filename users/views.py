@@ -70,7 +70,7 @@ class UserCreate(generics.CreateAPIView):
         token_serializer.save()
 
         # Return a response
-        return Response(user_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(token_serializer.data, status=status.HTTP_201_CREATED)
 
 
 class UserLogin(APIView):
